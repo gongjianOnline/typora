@@ -20,6 +20,5 @@ git commit -m 'update'
 # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git main
  
 # 部署到 https://<USERNAME>.github.io/<REPO>
-git push -f git@github.com:gongjianonline/typora.git master:main
- 
+ git push -f git@github.com:gongjianOnline/typora.git master:main
 cd -
