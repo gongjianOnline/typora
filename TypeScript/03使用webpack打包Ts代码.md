@@ -2,7 +2,7 @@
 
 ## 目录结构
 
-![1608623677(1)](F:\笔记\img\1608623677(1).png)
+[![rsmJs0.png](https://s3.ax1x.com/2020/12/22/rsmJs0.png)](https://imgchr.com/i/rsmJs0)
 
 ## 安装
 
