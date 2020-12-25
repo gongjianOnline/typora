@@ -106,7 +106,7 @@
 
 - Object.keys() // 遍历健名
 
-- Object.value() // 遍历健值
+- Object.values() // 遍历健值
 
 - Object.entries() //遍历健名和健值
 
