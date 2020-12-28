@@ -1,0 +1,16 @@
+# DOM中 getElementxxx  VS  Selector API 的区别
+
+- ## 从返回值
+
+  - get xxx 返回动态集合
+  - Selector 返回非动态集合
+
+- ## 效率
+
+  - getxxx  首次查找效率高
+  - Select API 首次查找效率低
+
+- ## 易用性
+
+  - getxxx  更繁琐
+  - Selector API 更简单
