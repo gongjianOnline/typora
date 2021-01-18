@@ -35,7 +35,7 @@
 
 - ### 打开和关闭窗口
 
-  - ```
+  - ```javascript
     window.open() / close()
     ```
 
