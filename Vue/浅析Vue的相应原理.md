@@ -122,7 +122,6 @@ console.log(obj.a)
 export default function defineReactive(data,key,value){
     if(arguments.length == 2){
         val = obj[key]
-        return
     }
     // value 作为中间变量
     Object,defineProperty(data,key,{
@@ -141,16 +140,26 @@ export default function defineReactive(data,key,value){
 
 ## 递归侦测对象
 
-将一个正常的object转换为每个层级的属性都是响应式(可以被侦测)的object
+解决的问题
+
+```javascript
+var obj  = {
+    a:{
+        m:{
+        	n:{}
+    	}
+    }
+}
+/*以上代码常规的defineProperty是监听不到里层对象的变化*/
+```
 
 ```javascript
 // Observer
+/**将一个正常的object转换为每个层级的属性都是响应式(可以被侦测)的object*/
 export default class Observer{
     constructor(){
         
     }
-    
-    
 }
 ```
 
@@ -160,12 +169,12 @@ export default class Observer{
 import defineReactive from "./defineReactive.js";
 import Observer from "./Observer.js"
 // 创建ovserve函数,注意函数名字没有r
-function observe(){
+function observe(value){
     // 如果value不是对象,什么都不做
     if(typeof value !== "object"){
         return
     }
-    // 定义ob;
+    // 定义ob，用于存储Observer的实例;
     var ob;
     if(typeof value.__ob__ !== "undefined"){
        ob = value.__ob__;
