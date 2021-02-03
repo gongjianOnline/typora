@@ -51,7 +51,7 @@
 
 ```javascript
 var obj = {};
-Object,defineProperty("obj",'a',{
+Object.defineProperty("obj",'a',{
     value:3, // 和get不能互存
     get(){
         console.log("访问了a属性")
@@ -73,7 +73,7 @@ obj.a = 10
 ```javascript
 var obj = {};
 var temp;
-Object,defineProperty("obj",'a',{
+Object.defineProperty("obj",'a',{
     get(){
         console.log("访问了a属性")
         return temp
@@ -98,11 +98,11 @@ obj.a = 10
 var obj = {};
 function defineReactive(data,key,value){
     if(arguments.length == 2){
-        val = obj[key]
+        value = obj[key]
         return
     }
     // value 作为中间变量
-    Object,defineProperty(data,key,{
+    Object.defineProperty(data,key,{
         get(){
             console.log("访问了a属性")
             return value
@@ -124,7 +124,7 @@ export default function defineReactive(data,key,value){
         val = obj[key]
     }
     // value 作为中间变量
-    Object,defineProperty(data,key,{
+    Object.defineProperty(data,key,{
         get(){
             console.log("访问了a属性")
             return value
@@ -138,7 +138,7 @@ export default function defineReactive(data,key,value){
 
 ```
 
-## 递归侦测对象
+## 递归(循环)侦测对象
 
 解决的问题
 
@@ -148,7 +148,8 @@ var obj  = {
         m:{
         	n:{}
     	}
-    }
+    },
+    b:4
 }
 /*以上代码常规的defineProperty是监听不到里层对象的变化*/
 ```
@@ -179,9 +180,15 @@ function observe(value){
     if(typeof value.__ob__ !== "undefined"){
        ob = value.__ob__;
     }else{
-        ob = bew Observer(value)
+        ob = new Observer(value)
     }
     return ob
 }
 ```
+
+Observer流程图
+
+[![ynnZR0.png](https://s3.ax1x.com/2021/02/02/ynnZR0.png)](https://imgchr.com/i/ynnZR0)
+
+
 
