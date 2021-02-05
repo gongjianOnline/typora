@@ -1,7 +1,7 @@
 # 浅谈Vue响应式原理
 1. 了解es6中的getter / setter 访问器属性
 2. 了解Object.defineproperty()
-3. 
+3. 递归(循环)侦测对象
 
 ## 一、es6中的getter和setter
 在了解getter和setter之前看看Vue的响应式发什么变化?
@@ -99,7 +99,6 @@ var obj = {};
 function defineReactive(data,key,value){
     if(arguments.length == 2){
         value = obj[key]
-        return
     }
     // value 作为中间变量
     Object.defineProperty(data,key,{
@@ -145,7 +144,7 @@ export default function defineReactive(data,key,value){
 ```javascript
 var obj  = {
     a:{
-        m:{
+        m:{ 
         	n:{}
     	}
     },
@@ -169,26 +168,28 @@ export default class Observer{
 ```javascript
 import defineReactive from "./defineReactive.js";
 import Observer from "./Observer.js"
-// 创建ovserve函数,注意函数名字没有r
+// 首先创建函数observe,起到辅助判别的作用
 function observe(value){
-    // 如果value不是对象,什么都不做
-    if(typeof value !== "object"){
-        return
-    }
-    // 定义ob，用于存储Observer的实例;
-    var ob;
-    if(typeof value.__ob__ !== "undefined"){
-       ob = value.__ob__;
-    }else{
-        ob = new Observer(value)
-    }
-    return ob
+  /*这里的value是指一会要监测的对象*/
+// 如果这个value不是对象,什么都不做
+  if(typeof value !== "object"){
+    return
+  }
+  // 定义ob (用来存储Observer的实例)
+  var ob;
+  /*
+  * __ob__ 对象中存储的Obsever的实例
+  * */
+  if(typeof value.__ob__ !== "undefined"){
+    ob = value.__ob__;
+  }else{
+    ob = new Observer(value)
+  }
+  return ob;
 }
 ```
 
 Observer流程图
 
-[![ynnZR0.png](https://s3.ax1x.com/2021/02/02/ynnZR0.png)](https://imgchr.com/i/ynnZR0)
-
-
+[![y8AGef.png](https://s3.ax1x.com/2021/02/05/y8AGef.png)](https://imgchr.com/i/y8AGef)
 
