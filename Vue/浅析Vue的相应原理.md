@@ -1,7 +1,7 @@
 # 浅谈Vue响应式原理
 1. 了解es6中的getter / setter 访问器属性
 2. 了解Object.defineproperty()
-3. 
+3. 递归(循环)侦测对象
 
 ## 一、es6中的getter和setter
 在了解getter和setter之前看看Vue的响应式发什么变化?
