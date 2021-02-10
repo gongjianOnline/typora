@@ -1,0 +1,101 @@
+# async await 全解
+
+1. promise的API
+2. promise的使用场景
+3. async/await
+
+## promise的API
+
+### 常规用法
+
+```
+    let text = new Promise((resolve,reject)=>{
+        resolve("成功时返回")
+        reject("失败时返回")
+    })
+```
+
+### Promise.resolve(resolve)
+
+制造一个成功(或失败)
+
+### Promise.reject(reject)
+
+制造一个失败
+
+### promise.all(数组)
+
+等待全部成功,或者有一个失败
+
+### promise.race(数组)
+
+等待第几个状态改变
+
+### promise.allSettled(数组)
+
+等待全部状态改变,目前处于stage-4(并未规范)
+手写allSettled
+
+```
+    let ppromise1 =()=>{return  new Promise((resolve,reject)=>{
+        setTimeout(()=>{reject("第一扇门关了")},3000)
+    })}
+
+    let ppromise2 =()=>{ return new Promise((resolve,reject)=>{
+        setTimeout(()=>{reject("第二扇门关了")},4000)
+    })}
+
+    let ppromise3 =()=>{ return new Promise((resolve,reject)=>{
+        setTimeout(()=>{resolve("第三扇门开了")},5000)
+    })}
+
+    // Promise.all([ppromise1(),ppromise2(),ppromise3()]).then(null,(reason)=>{console.log(reason)}) //返回失败的对象会终止
+    //冗余的代码
+    // Promise.all([ppromise1().then(()=>({status:'ok'}),()=>({status:"not ok"})),
+    // ppromise2().then(()=>({status:'ok'}),()=>({status:"not ok"})),
+    // ppromise3().then(()=>({status:'ok'}),()=>({status:"not ok"}))]).then((result)=>{console.log(result)})
+    // console.log("12.")
+    //上面的优化
+    let x = (paomise)=>{return paomise.then(()=>({status:'ok'}),()=>({status:"not ok"}))};
+    Promise.all([x(ppromise1()),x(ppromise2()),x(ppromise3())]).then((reason)=>{console.log(reason)})
+```
+
+## promise的使用场景
+
+1. 多次处理一个结果时
+2. 串行
+   1. 把任务放进队列中,完成一个在做下一个
+3. 并行
+   1. Promise.all([p1,p2])
+   2. promise.allSettled
+   3. 手写allSettled
+
+## async/await
+
+基本用法
+
+```
+    const fn = async ()=>{
+        const temp = await makePromise()
+        return temp + 1
+    }
+```
+
+await 错误处理
+
+```
+    const response = await axios.get('./xxx').then(null,errorHandler)
+    console.log(response)
+```
+
+await的传染性
+
+```
+    console.log(1)
+    await console.log(2)
+    console.log(3)
+```
+
+此时的consoel.log(3)变成了异步任务
+
+await的天然串行,在for里面是串行;在froEach里面是并行
