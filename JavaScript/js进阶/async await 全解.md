@@ -1,8 +1,18 @@
 # async await 全解
 
-1. promise的API
-2. promise的使用场景
-3. async/await
+1. 微任务和宏任务
+2. promise的API
+3. promise的使用场景
+4. async/await
+
+## 宏任务(macrotask )和微任务(microtask )
+
+在挂起任务时,js引擎会将所有任务按照类别分到两个队列中,首先在 macrotask 的队列（这个队列也被叫做 task queue）中取出第一个任务，执行完毕后取出 microtask 队列中的所有任务顺序执行；之后再取 macrotask 任务，周而复始，直至两个队列的任务都取完。
+
+- 先宏在微
+- 其实一开始没有两个任务队列
+- 为了让Promise回调更早执行,强行插入了一个队列
+- 如果没有微任务,函数直接用seTtimeout
 
 ## promise的API
 
