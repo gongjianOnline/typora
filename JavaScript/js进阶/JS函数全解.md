@@ -212,37 +212,78 @@ f_inner = (start,end,prev1,prev2)=>{
 
 ## 柯里化 Currying
 
-写出一个currify函数,是他分别接受2\3\4次参数,比如
+- 让所有函数只接受一个参数
+- 问题: 怎么支持两个参数?
+  - 利用闭包接收两个参数
+  - 利用对象
 
 ```javascript
-currify(addTwo)(1)(2) //3
-currify(addThree)(1)(2)(3) // 6
-currify(addFore)(1)(2)(3)(4) // 10
+/*利用闭包*/
+const add = a => b=> a+b;
+add(1)(2)
+/*利用对象*/
+const add = ({a,b})=>{a+b}
+add({a:1,b:2})
+
 ```
 
-```json
-{
-    data:{
-        name:'一级',
-        child:[
-            {
-                name:"二级",
-                child:[
-                    {name:'三级'},
-                    {name:"三级"}
-                ]
-            },
-            {
-                name:"二级",
-                child:[
-                    {name:'三级'},
-                    {name:"三级"}
-                ]
-            }
-        ]
+如何柯里化一个函数
+
+- 把多参数函数，变成单参数函数
+
+### 问题： 如何把三参数函数add(1,2,3) 变成 curriedAdd(1)(2)(3)的形式?
+
+```javascript
+const cirroedAdd = 
+      a=>
+		b=>
+			c=>
+				add(a,b,c)
+```
+
+#### 升级版
+
+```javascript
+/*
+	假设
+	addTwo 接收两个参数
+	addThree 接收三个参数
+	addFore 接收四个参数
+	请写出一个 currify 函数,使得他们分别接收2\3\4次参数
+	比如
+		currify(addTwo)(1)(2) //3
+		currify(addThree)(1)(2)(3)//6
+		currify(addFore)(1)(2)(3)(4) //10
+*/
+
+addTwo = (a,b)=>a+b;
+addThree = (a,b,c)=>a+b+c;
+addFore = (a,b,c,d)=>a+b+c+d;
+currify = (fn,params=[])=>{
+    return (arg)=>{
+        const newParams = params.concat(arg);
+        if(newParams.length === fn.length){
+           return fn(...newParams)
+        }else{
+            return currify(fn,newParams)
+        }
     }
 }
+newAddTwo = currify(addTwo)
+console.log(newAddTwo(1)(2))
+newAddThree = currify(addThree)
+console.log(newAddThree(1)(2)(3))
+newAddFore = currify(addFore)
+console.log(newAddTwo(1)(2)(3)(4))
 ```
+
+---
+
+## 高阶函数
+
+
+
+
 
 
 
