@@ -4,7 +4,7 @@ es5中的 **parseInt()**  **parseFloat()**  都在全局对象下(window)
 
 ```javascript
 Number.parseInt() // 取整数
-Number.parseFlote() //取小数
+Number.parseFloat() //取小数
 Number.isFinite() //检查一个数值是否有限
 Number,isNaN() // 检查一个数值是否是NaN
 Number.isInteger() // 判断一个数值是否是整数

@@ -117,3 +117,16 @@
 ​		原因：没有指定本地分支与远程分支连接 
 
 ​		解决： git branch 【--set-upstream 本地分支 远程分支】
+
+## 十四、忽略上传的指定文件
+
+以 .idea文件为例
+
+```shall
+git rm -r --cached .idea
+git add .
+git commit -m "xxx"
+git pull origin [分支]
+git push origin [分支]
+```
+

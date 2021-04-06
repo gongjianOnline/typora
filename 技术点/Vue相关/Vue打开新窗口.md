@@ -10,3 +10,10 @@ let routerUrl = this.$router.resolve({
 tempPage.location = routerUrl.href
 ```
 
+or
+
+```javascript
+let tempPage = window.open("","_blank");
+tempPage.location = url
+```
+
