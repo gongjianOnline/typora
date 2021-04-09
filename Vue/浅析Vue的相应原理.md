@@ -9,7 +9,7 @@
     const  myData = {
         n : 0
     }
-    console.log(myData) // {n:10}
+    console.log(myData) 
     const vm = new Vue({
         data: myData,
         template:`
@@ -18,7 +18,7 @@
     }).$mount('#app')
     setTimeout(()=>{
         myData.n += 10;
-        console.log(myData) // {n:(...)}
+        console.log(myData) 
         console.log(vm)
     },3000)
 ```
