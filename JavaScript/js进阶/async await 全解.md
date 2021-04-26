@@ -18,7 +18,7 @@
 
 ### 常规用法
 
-```
+```javascript
     let text = new Promise((resolve,reject)=>{
         resolve("成功时返回")
         reject("失败时返回")
@@ -46,7 +46,7 @@
 等待全部状态改变,目前处于stage-4(并未规范)
 手写allSettled
 
-```
+```javascript
     let ppromise1 =()=>{return  new Promise((resolve,reject)=>{
         setTimeout(()=>{reject("第一扇门关了")},3000)
     })}
@@ -84,7 +84,7 @@
 
 基本用法
 
-```
+```javascript
     const fn = async ()=>{
         const temp = await makePromise()
         return temp + 1
@@ -93,14 +93,14 @@
 
 await 错误处理
 
-```
+```javascript
     const response = await axios.get('./xxx').then(null,errorHandler)
     console.log(response)
 ```
 
 await的传染性
 
-```
+```javascript
     console.log(1)
     await console.log(2)
     console.log(3)
