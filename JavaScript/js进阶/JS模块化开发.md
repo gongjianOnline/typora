@@ -1,4 +1,4 @@
-# JS模块化开发
+# JS模块化的几种规范
 
 一个模块是能实现特定功能的文件，有了模块就可以方便的使用别人的代码，想要什么功能加载什么模块
 
@@ -125,7 +125,41 @@ define(function(require){
 
 ## ES6模块规范
 
+在ES6之前, JS没有提供官方的模块化, CommonJs 和 AMD 两种模块化规范较为活跃, 前者用于服务端,后者用于浏览器. ES6 在语言标准的层面上，实现了模块功能，而且实现得相当简单，完全可以取代 CommonJS 和 AMD 规范，成为浏览器和服务器通用的模块解决方案。
 
+### 模块输出
+
+```javascript
+// 方式一 统一输出
+function a (){}
+function b (){}
+export {a,b}
+// 方式二 逐个输出
+export function xxx(){}
+export var a = []
+// 方式三 默认暴露
+export default value
+```
+
+### 模块引入
+
+```javascript
+// 方式一和方式二 引入方式
+import {a , b} from "路径"
+
+// 方式三 引入方式
+import xxx from "路径"
+
+// 第三方引入
+import $ from "jquery"
+```
+
+### 打包工具
+
+```md
+Babel 将 ES6 编译成 ES5
+或者
+Browserify 编译打包
 
 
 
