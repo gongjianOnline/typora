@@ -20,6 +20,21 @@ if(! Function.prototype.bind){
 
 ```
 
+## 简介写法
+
+```javascript
+Function.prototype.Mybind = function(){
+    var self = this;
+    var agr = Array.from(arguents)
+    var that = agr.shift()
+    return function(){
+        return self.applay(that,agr)
+    }
+}
+```
+
+
+
 ---
 
 ## ES6版本
@@ -36,4 +51,6 @@ if(!Function.prototype.bind){
    	Function.prototype.bind = bind
 }
 ```
+
+---
 
