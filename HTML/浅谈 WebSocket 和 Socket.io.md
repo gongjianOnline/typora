@@ -63,12 +63,26 @@ webSockett是一种网络通信协议。它是html5开始提供了一种在单�
   }
   ```
 
+  4. 发送消息
+
+  ```javascript
+  ws.send("xxx")
+  ```
+
+  4. 终端连接
+  
+  ```javascript
+  ws.close()
+  ```
+  
+  
+  
   ---
-
+  
   ## 二、Socket.io
-
+  
   Socket.io 不是 webSocket， 他是websocket和轮询机制以及其他实时通信方式封装的通用接口，其目的是为了给各个浏览器提供兼容，所以wevsocket可以说是Socket.io的子集。Socket除了封装了webSocket还封装了下面几个通信机制：
-
+  
   - Adobe Flash Socket
     - 通过Flash嵌入到浏览器，因为不在W3C标准里面，况且Google浏览器宣布不在支持Flash的使用，所以被淘汰
   - AJAX long polling
@@ -79,13 +93,13 @@ webSockett是一种网络通信协议。它是html5开始提供了一种在单�
     - 置于页面中的隐藏Iframe标签，该标签的src属性指向返回服务器端事件的servlet路径。 每次在事件到达时，servlet写入并刷新一个新的script标签，该标签内部带有JavaScript代码，iframe的内容被附加上这一 script标签，标签中的内容就会得到执行。这种方式的缺点是接和数据都是由浏览器通过HTML标签来处理的，因此没有办法知道连接何时在哪一端已被 断开了，并且Iframe标签在浏览器中将被逐步取消使用。
   - JSONP Polling
     -   JSONP轮询基本上与HTTP轮询一样，不同之处则是JSONP可以发出跨域请求
-
-  ### 
-
   
-
+  ### 
+  
+  
+  
    
-
+  
   
 
 
