@@ -4,6 +4,7 @@
 2. 解析 CSS、Less 和 Sass
 3. 解析图片和字体
 4. 文件指纹策略
+5. JS、CSS、HTML 代码压缩
 
 ---
 
@@ -158,5 +159,85 @@ module.exports = {
 }
 ```
 
+---
 
+## webpack压缩 JS、CSS、html代码
+
+### 压缩 JS 代码
+
+使用webpack 压缩 JS 代码， webpack4推荐使用 uglifyjs-webpack-plugin 进行JS的代码压缩，webpack5以上提示 uglifyjs-webpack-plugin 即将被废弃，terser-webpack-plugin 将用来替代前者 进行JS的代码压缩。下面的配置webpack5环境为例
+
+安装
+
+```shell
+np install terser-webpack-plugin --save-dev
+```
+
+在 webpack.config.js 中配置
+
+```javascript
+const TerserPlugin = require("terser-webpack-plugin");
+module.exports = {
+    optimization:{
+        minimizer: [new TerserPlugin()]
+    }
+}
+```
+
+### 压缩  CSS 代码
+
+使用 webpack 压缩 CSS 代码, webpack4 推荐 optimize-css-assets-webpack-plugin + cssnano 进行代码压缩；webpack5 使用 css-minimizer-webpack-plugin 来替换， 下面的配置以 webpack5 环境为例。
+
+安装
+
+```shell
+npm install css-minimizer-webpack-plugin --save-dev
+```
+
+在 webpack.config.js 中配置
+
+```javascript
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+module.exports = {
+	optimization:{
+        minimizer:[
+            new CssMinimizerPlugin()
+        ]
+    }   
+}
+```
+
+### 压缩 HTML 
+
+使用 webpack 压缩 HTML 代码
+
+安装
+
+```shell
+npm install html-webpack-plugin --save-dev
+```
+
+在 webpack.config.js 中配置
+
+```javascript
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+module.exports = {
+    plugins:[
+        new HtmlWebpackPlugin({
+          template:path.join(__dirname,'src/index.html'),
+          filename:'index.html',
+          chunks:['index'],
+          inject:true,
+          minify:{
+            html:true,
+            collapseWhitespace:true,
+            preserveLineBreaks:false,
+            minfiyCss:true,
+            mininfy:true,
+            removeComments:false
+          }
+        })
+    ]
+}
+```
 
