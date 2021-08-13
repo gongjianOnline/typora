@@ -8,6 +8,7 @@
 6. mode 的用法
 7. 文件监听
 8. 文件热更新
+9. 自动删除dist文件夹
 
 ---
 
@@ -20,7 +21,7 @@ npm install webpack webpack-cli --save-dev
 
 webpack 默认的配置文件为 webpack.config.js ; 可以通过 webpack --config 指定配置文件 ; 常规项目构建会配置 webpack.dev.js 和 webpack.prod.js 两个文件.
 
-```javascript
+```ABAP
 -demo
 --package.json
 --src
@@ -30,7 +31,7 @@ webpack 默认的配置文件为 webpack.config.js ; 可以通过 webpack --conf
 
 在 webpack.config.js 中写入配置项
 
-```
+```javascript
 'use strict'
 const path = require('path');
 module.exports = {
@@ -182,5 +183,24 @@ module.exports = {
 }
 ```
 
+---
 
+## 自动删除 dist 文件夹
+
+安装
+
+```shell
+npm install clean-webpack-plugin --save-dev
+```
+
+配置 webpack.config.js 文件
+
+```javascript
+const {CleanWebpackPlugin} = require("clean-webpack-plugin")
+module.esports = {
+    plugins:[
+        new CleanWebpackPlugin()
+    ]
+}
+```
 
