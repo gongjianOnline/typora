@@ -9,6 +9,7 @@
 7. 文件监听
 8. 文件热更新
 9. 自动删除dist文件夹
+10. 多页面通用打包方案
 
 ---
 
@@ -203,4 +204,54 @@ module.esports = {
     ]
 }
 ```
+
+---
+
+## 多页面通用打包方案
+
+安装
+
+```shell
+npm install glob html-webpack-plugin --save-dev
+```
+
+配置 webpack.config.js 文件
+
+```javascript
+const glob = require("glob")
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const setMPA = () => {
+  const entry = {};
+  const htmlWebpackPlugins = [];
+  const entryFiles = glob.sync(path.join(__dirname, './src/*/index.js'))
+  Object.keys(entryFiles).map(index => {
+      const entryFile = entryFiles[index];
+      const match = entryFile.match(/src\/(.*)\/index\.js/)
+      const pageName = match && match[1];
+      entry[pageName] = entryFile;
+      htmlWebpackPlugins.push(
+        new HtmlWebpackPlugin({
+          template: path.join(__dirname, `src/${pageName}/index.html`),
+          filename: `${pageName}.html`,
+          chunks: ['vendors', pageName],
+        })
+      )
+  })
+  return {
+    entry,
+    htmlWebpackPlugins
+  }
+}
+const { entry, htmlWebpackPlugins } = setMPA()
+module.exports = {
+    entry:entry,
+    output: {
+        path: path.join(__dirname, 'dist'),
+        filename: '[name]_[chunkhash:8].js'
+    },
+    plugins:[].concat(htmlWebpackPlugins)
+}
+```
+
+
 
