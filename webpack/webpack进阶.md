@@ -5,6 +5,8 @@
 1. 自动兼容 css 前缀 postcss-loader postcss-preset-env
 2. 静态资源内联 raw-loader
 3. 移动端css PX 自动转换为 rem
+4. 多页面通用打包方案
+5. 快速定位源码
 
 ---
 
@@ -123,6 +125,98 @@ module.exports = {
 <head>
 	<script><%=require('raw-loader!babel-loader!../node_modules/lib-flexible/flexible.js')%></script>
 </head>
+```
+
+---
+
+## 多页面通用打包方案
+
+安装
+
+```shell
+npm install glob html-webpack-plugin --save-dev
+```
+
+配置 webpack.config.js 文件
+
+```javascript
+const glob = require("glob")
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const setMPA = () => {
+  const entry = {};
+  const htmlWebpackPlugins = [];
+  const entryFiles = glob.sync(path.join(__dirname, './src/*/index.js'))
+  Object.keys(entryFiles).map(index => {
+      const entryFile = entryFiles[index];
+      const match = entryFile.match(/src\/(.*)\/index\.js/)
+      const pageName = match && match[1];
+      entry[pageName] = entryFile;
+      htmlWebpackPlugins.push(
+        new HtmlWebpackPlugin({
+          template: path.join(__dirname, `src/${pageName}/index.html`),
+          filename: `${pageName}.html`,
+          chunks: ['vendors', pageName],
+        })
+      )
+  })
+  return {
+    entry,
+    htmlWebpackPlugins
+  }
+}
+const { entry, htmlWebpackPlugins } = setMPA()
+module.exports = {
+    entry:entry,
+    output: {
+        path: path.join(__dirname, 'dist'),
+        filename: '[name]_[chunkhash:8].js'
+    },
+    plugins:[].concat(htmlWebpackPlugins)
+}
+```
+
+---
+
+## 快速定位源码
+
+**注意: 开发环境开启,线上环境需要关闭此功能. 避免导致业务代码的泄露**
+
+使用 sourcemap 定位源码
+
+source map 关键字
+
+| 关键字     | 描述                                          |
+| ---------- | --------------------------------------------- |
+| eval       | 使用 eval 包裹膜块代码                        |
+| source map | 产生 .map 文件                                |
+| cheap      | 不包含列信息                                  |
+| inline     | 将 .map 作为 DataURI 嵌入, 不单独生成.map文件 |
+| module     | 包含 loader 的 sourcemap                      |
+
+source map 类型
+
+| devtool                         | 是否适合生产环境 | 可以定位的代码                       |
+| ------------------------------- | ---------------- | ------------------------------------ |
+| (none)                          | yes              | 最终输出的代码                       |
+| eval                            | no               | webpack 生成的代码 (一个个的模块)    |
+| cheap-eval-source-map           | no               | 经过 loader 转换后的代码(只能看到行) |
+| cheap-module-eval-source-map    | no               | 源代码(只能看到行)                   |
+| eval-source-map                 | no               | 源代码                               |
+| cheap-source-map                | yes              | 经过loader转换后的代码(只能看到行)   |
+| cheap-cheap-source-map          | yes              | 源代码(只能看到行)                   |
+| inline-cheap-source-map         | no               | 经过loader转换后的代码(只能看到行)   |
+| inlline-cheap-module-source-map | no               | 源代码(只看到行)                     |
+| source-map                      | yes              | 源代码                               |
+| inline-source-map               | no               | 源代码                               |
+| hidden-source-map               | yes              | 源代码                               |
+
+配置 webpack.confing.js 文件
+
+```javascript
+'use strict'
+module.exports = {
+    devtool:"source-map"
+}
 ```
 
 ---
