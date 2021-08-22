@@ -7,6 +7,9 @@
 3. 移动端css PX 自动转换为 rem
 4. 多页面通用打包方案
 5. 快速定位源码
+6. 基础包和公共脚本分离
+7. tree shaking (摇树优化)
+8. scope hoisting
 
 ---
 
@@ -220,6 +223,134 @@ module.exports = {
 ```
 
 ---
+
+## 基础包和公共脚本分离
+
+webpack4内置了 SplitChunksPlugin 替代 webpack3中的 CommonsChunkPlugin插件,也可以使用 html-webpack-externals-plugin进行基础包的分离
+
+### CommonsChunkPlugin
+
+chunk参数说明
+
+| 参数     | 说明                       |
+| -------- | -------------------------- |
+| .async   | 异步引入的库进行分离(默认) |
+| .initial | 同步引入的库进行分离       |
+| .all     | 所有引入的库进行分离(推荐) |
+
+#### 打包基础包分离
+
+```javascript
+module.exports = {
+    // 需要在HtmlWebpackPlugin的chunks中加入'vendors'
+    optimization:{
+        splitChunks:{
+          cacheGroups:{
+            commons:{
+              test:/(react|react-dom)/,
+              name:'vendors',
+              chunks:'all'
+            }
+          }
+        }
+    }
+}
+```
+
+#### 打包分离公共代码
+
+```javascript
+module.exports = {
+    // 需要在HtmlWebpackPlugin的chunks中加入'commons'
+    optimization:{
+        splitChunks:{
+            minSize:0, // 需要分离的文件大小
+            cacheGroups:{
+                commons:{
+                    name: 'commons',
+                    chunks: 'all',
+                    minChunks: 2, // 文件引入的数量
+                }
+            }
+            
+        }
+    }
+}
+```
+
+
+
+### html-webpack-externals-plugin
+
+安装
+
+```shell
+npm install html-webpack-externals-plugin --save-dev
+```
+
+配置 webpack.config.js 
+
+```javascript
+const HtmlWebpackExternalsPlugin = require("html-webpack-externals-plugin")
+module.exports = {
+    plugins:[
+        new HtmlWebpackExternalsPlugin({
+          externals: [
+            {
+              module: 'react',
+              entry: 'https://now8.gtimg.com/now/lib/16.2.0/react.min.js',
+              global: 'React',
+            },
+            {
+              module: 'react-dom',
+              entry: 'https://now8.gtimg.com/now/lib/16.2.0/react-dom.min.js',
+              global: 'ReactDOM',
+            },
+          ],
+        })
+    ]
+}
+```
+
+---
+
+## tree shaking (摇树优化)
+
+一个模块可能有多个方法,只要其中的某个方法被使用,则整个文件都会被打包, 使用 tree shaking 只会把用到的方法进行打包, 其他方法会被擦除. **（注意：必须是ES6的语法）**
+
+webpack 在 production 模式下自动开启 tree-shaking
+
+配置  .babelrc 文件
+
+```javascript
+{
+    "modules":false
+}
+```
+
+
+
+---
+
+## scope hoisting
+
+现象： webpack在构建代码的时候是会存在大量的闭包代码， 这些闭包会导致构建文件体积增大，函数作用域变多，内存开销也会增大。
+
+解决：使用scopr hoisting
+
+原理：将所有的模块代码按照引入顺序放在一个函数作用域里，然后适当的重命名一些变量一防止变量名冲突； 通过 scopr hoidting可以减少函数声明代码和内存的开销 **（注意：必须是ES6的语法）**
+
+使用：webpack4以上 在 production 模式下自动开启
+
+在 webpack3 中需要在 webpack.config 中配置
+
+```javascript
+module.exports = {
+    plugins:[
+        new webpack.optimize.ModuleConcatenationPlugin()
+    ]
+}
+```
 
 
 
