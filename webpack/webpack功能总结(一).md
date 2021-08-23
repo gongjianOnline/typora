@@ -10,6 +10,7 @@
 6. 基础包和公共脚本分离
 7. tree shaking (摇树优化)
 8. scope hoisting
+9. 代码分割和动态import
 
 ---
 
@@ -351,6 +352,36 @@ module.exports = {
     ]
 }
 ```
+
+---
+
+## 代码分割和动态 import 
+
+对于较大的 web 应用来讲，将所有的代码都在放在一个文件中是不够有效的，特别是当某些代码快是在某些特殊的时候才会被使用到的时候。webpack 提供了将代码分割成 chunks（语块），当代码运行到需要他们的时候在进行加载。
+
+- 适用的场景
+  - 抽离相同代码到一个共享块
+  - 脚本懒加载, 使得初始下载的代码更小
+
+### 如何动态import
+
+安装
+
+```shell
+npm install @babel/plugin-syntax-dynamic-import --save-dev
+```
+
+配置 .babelrc
+
+```json
+{
+    "plugins":[
+        "@babel/plugin-syntax-dynamic-import"
+    ]
+}
+```
+
+---
 
 
 
