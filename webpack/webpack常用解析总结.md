@@ -1,4 +1,4 @@
-# webpack 常用的解析
+# webpack 常用解析总结
 
 1. 解析ES6 和 React JSX
 2. 解析 CSS、Less 和 Sass

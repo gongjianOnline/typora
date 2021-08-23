@@ -1,6 +1,6 @@
  
 
-# webapck 进阶
+# webapck 功能总结（一）
 
 1. 自动兼容 css 前缀 postcss-loader postcss-preset-env
 2. 静态资源内联 raw-loader
@@ -11,6 +11,7 @@
 7. tree shaking (摇树优化)
 8. scope hoisting
 9. 代码分割和动态import
+10. webpack集成eslint
 
 ---
 
@@ -382,6 +383,50 @@ npm install @babel/plugin-syntax-dynamic-import --save-dev
 ```
 
 ---
+
+## webpack集成 eslint
+
+webpack 可以使用最全的 eslint-config-airbnb 进行语法见检查，也可使用 eslint-config-ivweb 做语法检查；前者的语法检查最全，体积也相对较大。后者是由腾讯NOW 团队定制的语法规范，覆盖相对较少，但体积也相对较小。
+
+安装
+
+```shell
+npm install eslint eslint-plugin-import eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-jsx-a11y eslint-config-airbnb babel-eslint --save-dev
+```
+
+配置 webpack.config.js 
+
+```javascript
+module.exports = {
+    module:{
+        rules:[
+            {
+                test:/\.js$/,
+                use:[
+                    'babel-loader',
+                    'eslint-loader'
+                ]
+            }
+        ]
+    }
+}
+```
+
+创建 .eslintrc.js 文件
+
+```javascript
+module.exports = {
+    "parser":"babel-eslint",
+    "extends":"airbnb", // 继承airbnb，可以多选["xxx","xxx"]
+    "env":{
+        "browser":true,
+        "node":true
+    },
+    "rules":{ // 规则自定义
+        "indent":['error',2]
+    }
+}
+```
 
 
 
