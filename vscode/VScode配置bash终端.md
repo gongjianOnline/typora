@@ -14,3 +14,11 @@
 }
 ```
 
+# Vscode react HTML 不闭合
+
+```json
+"emmet.includeLanguages": {
+	"javascript": "javascriptreact"
+},
+```
+
