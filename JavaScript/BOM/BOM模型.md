@@ -36,7 +36,7 @@
 
   - ```javascript
     // 在新窗口打开新的url
-    locationg.assign("url")
+    location.assign("url")
     location.href = "url"
     location = "url"
     
