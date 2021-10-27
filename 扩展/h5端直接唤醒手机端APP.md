@@ -50,7 +50,7 @@ H5唤醒APP，需要使用 **scheme协议** (有app端提供)，但此协议在*
 				  //ios端
 				  if (isIOS) {
 				    //ios的scheme协议
-				    window.location.href = 'tbopen://m.taobao.com/tbopen/index.html?h5Url=这里放具体的地址'
+				    window.location.href = 'taobao://s.taobao.com?id=商品id'
 				    setTimeout(function () {
 				      let hidden = window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden
 				      if (typeof hidden == "undefined" || hidden == false) {
