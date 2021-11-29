@@ -1,17 +1,25 @@
 # Vscode配置Bash终端
 
 ```json
-{
-    "terminal.integrated.profiles.windows": {
-        "Git Bash": {
-            "path": "C:\\Program Files\\Git\binC:\\Program Files\\Git\\bin\\bash.exe",
-            "args": []
-        }
+// 新版本下配置bash
+"terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell"
     },
-    "terminal.external.windowsExec": "C:\\Program Files\\Git\binC:\\Program Files\\Git\\bin\\bash.exe",
-    "terminal.integrated.automationShell.windows": "C:\\Program Files\\Git\binC:\\Program Files\\Git\\bin\\bash.exe",
-    "terminal.integrated.defaultProfile.windows": "Git Bash"
-}
+    "Command Prompt": {
+      "path": [
+        "${env:windir}\\Sysnative\\cmd.exe",
+        "${env:windir}\\System32\\cmd.exe"
+      ],
+      "args": [],
+      "icon": "terminal-cmd"
+    },
+    "GitBash": {
+      "path": "E:\\install\\Git\\bin\\bash.exe"
+    }
+  },
+  "terminal.integrated.defaultProfile.windows": "GitBash"
 ```
 
 # Vscode react HTML 不闭合
