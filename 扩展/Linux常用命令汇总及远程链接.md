@@ -54,9 +54,10 @@ sudo vi /etc/ssh/sshd_config
 | top                  | 查看所有进程        |
 | ps -ef \| grep docer | 搜索 docer 进程     |
 | kill -9 [进程号]     | 关闭指定进程        |
-| servie sshd status   | 查看 ssh 运行状态   |
-| sercie sshd stop     | 关闭 ssh 服务       |
-| sercie sshd restart  | 重启服务 ssh        |
+| service sshd status  | 查看 ssh 运行状态   |
+| service sshd stop    | 关闭 ssh 服务       |
+| service sshd restart | 重启服务 ssh        |
+| ip addr              | 查看本机ip          |
 
 ### 文档相关命令
 
@@ -86,5 +87,22 @@ sudo vi /etc/ssh/sshd_config
 | --------------------------------------------- | --------------------- |
 | tar zxvf [压缩包名称].扩展名                  | 解压 tar.gz 压缩包    |
 | unzip [压缩包名称].zip                        | 解压 zip 格式的压缩包 |
-| tar zcvf [压缩后的名称].tar.gz [要压缩的目录] |                       |
+| tar zcvf [压缩后的名称].tar.gz [要压缩的目录] | 压缩文件              |
+
+### 防火墙操作
+
+| 命令                                     | 注释                                             |
+| ---------------------------------------- | ------------------------------------------------ |
+| sudo ufw status                          | 查看防火墙的状态; “Status: inactive”状态：不活跃 |
+| sudo apt-get install ufw                 | 安装防火墙                                       |
+| sudo ufw enable                          | 开启防火墙                                       |
+| sudo ufw status                          | 查看防火墙的状态(规则)                           |
+| sudo ufw allow 22                        | 开放22端口                                       |
+| sudo ufw reload                          | 重启ufw防火墙                                    |
+| sudo netstat -tunlp \| grep 22           | 查看22端口信息                                   |
+| sudo ufw default deny                    | 拒接所有外来访问，本机能正常访问外部             |
+| sudo ufw delete allow 21                 | 关闭21端口                                       |
+| sudo ufw allow 8001/tcp                  | 指定开放8001的tcp协议                            |
+| sudo ufw allow from 192.168.121.1        | 开启指定ip为192.168.121.1的计算机操作所有端口    |
+| sudo ufw delete allow from 192.168.121.1 | 关闭指定ip为192.168.121.1的计算机操作所有端口    |
 
