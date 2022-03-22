@@ -2,7 +2,7 @@
 
 ```scss
 <style lang="scss" scoped>
-    .nav-right::v-deep .el-badge__content{
+    :deep(.el-badge__content){
       tops: 10px !important;
     }
 </style>
