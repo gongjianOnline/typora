@@ -59,7 +59,7 @@
         - 问题: 如果 JS 引擎执行,GUI 没有完全渲染完成, 会存在部分 DOM 节点获取不到的情况
       - **注意: 如果多个 script请求 在没有任何属性方式下是顺序执行的; 如果属性是async，最先返回的先执行（并行）；如果是 defer 浏览器内部会在 GUI 渲染完成后，等待所有设置 defer 的资源请求回来，在按照代码的顺序加载JS**
 
-  **总结**
+  ### 总结
 
   ​	在真实项目开发中，我们一般把 link 放在页面的头部 【为了在没有 DOM 的时候，就通知HTTP去请求CSS，这样等DOM渲染完，CSS的资源也获取多了，更有效的安排时间，提高页面渲染效率】；把JS放在页面的底部，防止阻碍GUI的渲染，如果放在顶部，推荐设置 async、defer。
 
@@ -67,7 +67,9 @@
 
   ## 浏览器渲染过程
 
-  DOM树（渲染完成后触发 DOMCOntentLoaded 事件 -> [ 执行JS？如果有的话 ] -> CSSOM树 -> 渲染树（浏览器未来是按照这个树绘制的页面）-> Layout布局计算（重排）-> painting绘制（重绘）
+  ![](https://raw.githubusercontent.com/gongjianOnline/ImgHosting/main/img/%E6%97%A0%E6%A0%87%E9%A2%98-2022-05-11-1317.png)
+
+  解析HTML ->DOM树（渲染完成后触发 DOMCOntentLoaded 事件 -> [ 执行JS？如果有的话 ] -> CSSOM树 -> 渲染树（浏览器未来是按照这个树绘制的页面）-> Layout布局计算（重排）-> painting绘制（重绘）
 
   ### 关于重绘和重排
 
