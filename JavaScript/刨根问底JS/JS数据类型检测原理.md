@@ -71,6 +71,7 @@ let res = instance_of([],Array); // true
 - Object.prototype.toString.call(value)
   - 没有任何缺点
   - 原理
+    - Symbol(Symbol.toStringTag):"xxx"  
     - 首先找到 Object.prototyoe.toString方法，把 toString 执行之后，让方法中的this变为要检测的这个值，toString内部会对应this（检测这个值）的数据类型信息 “ [ object ? ] ”
 
 [^此文章参考 《珠峰前端高级体系课》]: 
