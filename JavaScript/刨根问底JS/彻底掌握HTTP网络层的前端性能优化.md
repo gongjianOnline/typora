@@ -91,7 +91,7 @@ console.log(eencodeURI(url2))
 
 **永远不要对 HTML 文件做强缓存**
 
-# 图片展位
+![](https://raw.githubusercontent.com/gongjianOnline/ImgHosting/main/img/%E9%92%B1%E7%BC%93%E5%AD%98.png)
 
 #### 协商缓存：Last-Modified (HTTP1.0) / Etag (HTTP1.1)----状态码304
 
@@ -102,7 +102,7 @@ console.log(eencodeURI(url2))
 
 **协商缓存每一次都会向服务器校验资源是否更新**
 
-# 图片占位
+![](https://raw.githubusercontent.com/gongjianOnline/ImgHosting/main/img/%E5%8D%8F%E5%95%86%E7%BC%93%E5%AD%98.png)
 
 ### 二、本地存储
 
