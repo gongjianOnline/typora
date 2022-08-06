@@ -1,0 +1,169 @@
+# react中使用mobx的配置及路由懒加载配置
+
+## 一、mobx配置
+
+安装
+
+```shell
+yarn add mobx 
+yarn add mobx-react
+yarn add babel-plugin-transform-decorators-legacy -D
+yarn add @babel/preset-env -D
+yarn add babel-plugin-transform-class-properties -D
+yarn add @babel/plugin-proposal-decorators -D
+```
+
+react配置文件抽离 (在分离前要commit本地的代码)
+
+```shell
+yarn eject
+```
+
+配置 package.json 文件
+
+```json
+  "babel": {
+	    "plugins": [
+	      [
+	        "@babel/plugin-proposal-decorators",
+	        {
+	          "legacy": true
+	        }
+	      ],
+      "transform-class-properties"
+    ],
+    "presets": [
+      "react-app",
+      "@babel/preset-env"
+    ]
+ },
+```
+
+### 使用
+
+模块化状态文件 auth.js
+
+```javascript
+import {makeObservable ,observable ,action} from "mobx"
+class AuthStore {
+    // 初始化状态值
+    @observable values = {
+        username:"",
+        password:""
+    }
+    // 修改状态值
+    @action setIsUsername(username){
+        this.values.username = username
+    }
+    @action setIsPassword(password){
+        this.values.password = password
+    }
+    // mobx5.0以上版本添加构造函数
+    constructor(){
+        makeObservable(this)
+    }
+}
+export default AuthStore
+```
+
+创建统一导出入口 index.js
+
+```javascript
+import React,{createContext,useContext} from "react"
+import AuthStore from "./auth"
+
+const context = createContext({
+  AuthStore: new AuthStore()
+})
+export const useStore = ()=>useContext(context)
+```
+
+在函数组件中使用
+
+```javascript
+import React, { useRef } from "react";
+import { observer } from "mobx-react";
+import { useStore } from "../stores/index";
+const Component = observer(() => {
+  const { AuthStore } = useStore();
+  const inputRef = useRef();
+  const handelChange = () => {
+    AuthStore.setIsUsername(inputRef.current.value)
+  };
+  return (
+    <>
+      <div>Login:{AuthStore.values.username}</div>
+      <input type="text" onChange={handelChange} ref={inputRef} />
+    </>
+  );
+});
+export default Component;
+```
+
+---
+
+## 路由配置
+
+index.js文件中
+
+```javascript
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import {
+  BrowserRouter
+} from "react-router-dom"
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
+);
+```
+
+app.js文件-- 注意版本不同  react18.0 中的 element属性接受的是 <组件名/>; 以下版本接受的 "组件名"
+
+```javascript
+import './App.css';
+import React,{Suspense,lazy} from "react"
+import {
+  Routes,
+  Route
+} from "react-router-dom"
+import Header from "./components/header"
+import Footer from "./components/footer"
+import Loading from "./components/Loading"
+
+// 路由懒加载
+const Home = lazy(()=>import("./pages/home.js"))
+const History = lazy(()=>import("./pages/history.js"))
+const About = lazy(()=>import("./pages/about.js"))
+const Login = lazy(()=>import("./pages/Login"))
+const Register = lazy(()=>import("./pages/register"))
+
+function App() {
+  return (
+    <div className="App">
+      <Header/>
+      <main>
+        {/* 懒加载前的Loading动画 */}
+        <Suspense fallback={<Loading/>}> 
+          <Routes>
+            <Route path="/" exact element={<Home/>}></Route>
+            <Route path="/history" exact element={<History/>}></Route>
+            <Route path="/about" exact element={<About/>}></Route>
+            <Route path="/login" exact element={<Login/>}></Route>
+            <Route path="/register" exact element={<Register/>}></Route>
+          </Routes>
+        </Suspense>
+      </main>
+      <Footer/>
+    </div>
+  );
+}
+
+export default App;
+```
+
