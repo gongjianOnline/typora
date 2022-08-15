@@ -72,6 +72,24 @@ console.log(obj3)
 
 ## Object.defineProperty()的用法
 
+使用:
+
+object.definePropertry(obj,prop,descriptor)
+
+- obj  要更改的对象
+- prop 要更改的对象中的key
+- descriptor 描述
+  - 公共属性
+    - configurable 表示是否可删除(值为false时不可删也不可改),默认为false
+    - enumerable 表示是否可枚举, 默认是false
+  - 数据描述符
+    - wirtable 是否可以修改,默认为false
+    - value 默认值,默认为 undefined
+  - getter / setter
+    - get 获取时触发的监听
+    - set 修改时触发的监听
+    - **get 和 set 不能同数据描述符同时出现**
+
 ```javascript
 /*向obj3添加虚拟属性*/
 let obj3 = {
