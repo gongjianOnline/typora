@@ -46,7 +46,7 @@ mosule.export = {
 安装依赖
 
 ```shell
-npm install style-loader css-loader  less-loader  sass-loader --save-dev
+npm install style-loader css-loader  less-loader sass sass-loader --save-dev
 ```
 
 配置 webpack.config.js 文件中
