@@ -84,6 +84,18 @@ export default Promise
 
 判断 then 的输入方式，需要单独封装一个 resolvePromise 函数进行链路判断和引导
 
+规范
+
+resolvePromise共接收四个参数 promise , x , resolve , reject
+
+- 如果 x 和 promise2 引用的是同一个对象就会造成死循环, 需要 reject 直接抛出异常
+- 判断 x 是否为 promise
+  - 缩小范围 (x==="object" && x !== null) || (x === "function")
+  - 查看 x 有没有 .then 属性 (规范中: 取出 x.then 可能会发生异常, 如果 then 是 function 则就认定他是 promise)
+- 如果 x 是 promise 则监听报错
+  - try 优化, 防止 x.then 的返回是同一个 promise, 必须调用 resolvePromise
+  - 防止多一次调用多个状态, 加入 called 认证, 只要通过一个状态,这个值就会认为 true
+
 ```javascript
 function resolvePromise (promise2,x,resolve,reject){
     // 判断 x 和 promise 不能引入同一个 promise 对象
