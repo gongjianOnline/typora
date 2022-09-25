@@ -1,5 +1,7 @@
 # promise 专题
 
+[TOC]
+
 ## promise 基本概念
 
 - promise 是一个构造函数, 必须传一个 executor 执行器
@@ -185,6 +187,119 @@ class Promise{
     then(onFulfilled,onRejected){
         onFulilled = typeof onFulfilled === "function"?onFulflled : v=>v;
         onRejected = typeof onRejected === "function"? onRejected : e=>{throw e}
+    }
+}
+```
+
+---
+
+## 常用API实现
+
+### promise.catch
+
+失败的回调
+
+用法
+
+```javascript
+let xxx = new Promise((resolve,reject)=>{})
+xxx.then(()=>{}).catch(()=>{})
+```
+
+实现
+
+```javascript
+class Promise{
+    ...
+    static catch = function (errCallback){
+        return this.then(null,errCallback)
+    }
+}
+```
+
+---
+
+### promise.resolve 
+
+```javascript
+class Promise {
+    constructor(exectuor){
+        ...
+        const resolve = (value)=>{
+           // 判断value是不是 promise ,如果是直接返回then的结果
+           if(value === Promise){
+              return value.then(resolve,reject)
+           }
+            ...
+        }
+        ...
+    }
+    static resolve= function(value){
+        return new Promise((resolve,reject)=>{
+            resolve(value)
+        })
+    }
+}
+```
+
+### promise.reject
+
+```javascript
+class Promise{
+    static reject = function(reason){
+        return new Promise((resolve,reject)=>{
+            reject(reason)
+        })
+    }
+}
+```
+
+### promise.call
+
+只有全部成功才会成功
+
+用法
+
+```javascript
+new Promise.call([promise1,promise2]).then(()=>{},()=>{})
+```
+
+实现
+
+```javascript
+class Promise{
+    static all(values){
+        return new Promise((resolve,reject)=>{
+           	let arr = [];
+        	let times = 0;
+            function processData(index,data){
+                arr[index] = data;
+                if(++times === values.length){
+                    resolve(arr)
+                }
+            }
+            values.forEach((item,index)=>{
+                Promise.resolve(item).then(()=>{
+					processDate(index,data)                    
+                })
+            })
+        })
+    }
+}
+```
+
+### promise.race
+
+有一个成功就算成功
+
+```javascript
+class Promise{
+    static race = function(values){
+        return new Promise((resolve,reject)=>{
+            values.forEach((item)=>{
+                Promise.resolve(item).then(resolve,reject)
+            })
+        })
     }
 }
 ```
