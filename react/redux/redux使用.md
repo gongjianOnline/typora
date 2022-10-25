@@ -117,3 +117,121 @@ componentDidMount(){
 
 ```
 
+---
+
+## redux 使用 redux-thunk 中间件
+
+只是让 dispatch 支持函数的形式
+
+安装
+
+```shell
+yarn add redux-thunk -S
+```
+
+
+
+模拟一个 函数文件 fun.js
+
+```javascript
+const xxxfun = ()=>{
+  return (dispatch)=>{
+    new Promise((resolve)=>{
+      resolve("不知道这个玩意能干点啥")
+    }).then(response=>{
+      dispatch({
+        type:'setText',
+        content:response
+      })
+    })
+  }
+}
+export default xxxfun
+```
+
+声明一个 reducer 文件夹 reducer / test.js
+
+```javascript
+const reducer = ((
+  state={
+    text:'xxx'
+  },
+  action
+)=>{
+  let newState = {...state};
+  let {type,content} = action
+  switch (type) {
+    case "setTest":
+      newState.text = content
+      return newState
+
+    default:
+      return state
+  }
+})
+export default reducer
+```
+
+在 store.js 中整合
+
+```javascript
+import {createStore,combineReducers, applyMiddleware} from "redux"
+import reducerText from "./test.js"
+import reduxThunk from "redux-thunk"
+const reducer = combineReducers({reducerText})
+const store = createStore(reducer,applyMiddleware(reduxThunk))
+export default store
+```
+
+在组件中使用
+
+```javascript
+import store from "./redux/store"
+import xxxFun from "./redux/test.js"
+const ChildA = ()=>{
+  const handelClick = ()=>{
+    store.dispatch(xxxFun())
+  }
+  return (
+    <div>
+      <h2>this is childA</h2>
+      <button onClick={handelClick}>handelClick</button>
+    </div>
+  )
+}
+export default ChildA
+```
+
+---
+
+## redux 使用 redux-promise 中间件
+
+使用方式和 redux-thunk 一样, 唯一的区别是 dispatch 可以接收 promise 对象
+
+安装
+
+```shell
+yarn add redux-promise -S
+```
+
+在 store 文件中配置
+
+```javascript
+import {createStore,combineReducers, applyMiddleware} from "redux"
+import reducerText from "./reducer/test"
+import reduxThunk from "redux-thunk"
+const reducer = combineReducers({reducerText})
+const store = createStore(reducer,applyMiddleware(reduxPromise))
+export default store
+```
+
+## redux 持久化
+
+安装
+
+```shell
+yarn add redux-persist -S
+```
+
+使用查看官方文档 CRM 学习法
+

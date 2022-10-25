@@ -10,6 +10,7 @@
 - Connect
   - Provider 内部组件如果想使用 state 中的数据, 就必须被connect加强 (需要柯力化调用组件)
   - connect 本质上就是简化了获取 store 中的state
+  - **需要接受两个参数（将要传给子组件传递的属性，将要给子组件传的回调函数）**
 
 ---
 
@@ -21,106 +22,101 @@
 npm install react-redux redux 
 ```
 
-在 src 目录中创建 reducer / index.js
+创建 redux 文件夹用于存放状态 redux/reducer/index 模块化设置 reducer
 
 ```javascript
-const initState = {
-  count:0
-}
-exports.reducer = (state=initState,action)=>{
-  switch (action.type) {
-    case "add_action":
-      return {
-        count:state.count+1
-      }  
-    default:
-      return state
-  }
-}
+const reducer = ((
+	state = {
+        text:"hello world"
+    },
+    action
+)=>{
+	let newState  = {...state}
+    let {type,text} = action
+    switch (type) {
+      	case "setText":
+          newState.text = text
+          return newState
+        default:
+          return state
+     }    
+})
+export default reducer
 ```
 
-在 src 目录中创建 store / index.js
+创建 redux / store.js 用于整合 reducer
 
 ```javascript
-import {legacy_createStore as createStore} from "redux"
-import {reducer} from "../reducer/index"
-
+import {createStore,combineReducers} from "redux"
+import textReducer from "./reducer/index"
+const reducer = combineReducers({textReducer})
 const store = createStore(reducer)
 export default store
 ```
 
-创建 ComSend 组件,作为发送方
+在组件中使用 APP 组件引入
 
-```javascript
-import React from "react"
-import {connect} from "react-redux"
-
-class ComSend extends React.Component{
-  handelClick = ()=>{
-    this.props.sendAction()
-  }
-  render(){
-    return (
-      <button onClick={()=>this.handelClick()}>+</button>
-    )
-  }
-}
-
-const mapDisPatchToProps = (dispatch)=>{
-  return {
-    sendAction:()=>{
-      dispatch({
-        type:"add_action"
-      })
-    }
-  }
-}
-
-export default connect(null,mapDisPatchToProps)(ComSend)
-```
-
-创建 ComGet 组件，作为接收方
-
-```javascript
-1import React from "react"
-import {connect} from "react-redux"
-class ComGet extends React.Component{
-  render(){
-    console.log(this.props)
-    return (
-      <div>
-        {this.props.count}
-      </div>
-    )
-  }
-}
-
-const 就khuy    NHJM K	下 000000000K0=] (state)=>{
-  return state
-}
-export default connect(mapStateToProps)(ComGet)
-```
-
-在 app.js 中引入
-
-```javascript
-import React from "react";
+```jsx
 import {Provider} from "react-redux"
-import store from "./store/index"
-import ComSend from "./pages/ComSend/index"
-import ComGet from "./pages/ComGet/index"
-
-function App() {
-  return (
-    <Provider store={store}>
-      <div className="App">
-        <h1>this is app page</h1>
-        <ComSend></ComSend>
-        <ComGet></ComGet>
-      </div>
-    </Provider>
-  );
+import store from "./redux/store.js"
+import ChildA from "./childA"
+import ChildB from "./childB"
+const App = ()=>{
+    return(
+    	<Provider store={store}>
+            <div>
+            	<ChildA/>
+                <ChildB/>
+            </div>
+        </Provider>
+    )
 }
-export default App;
+export default Index
+```
+
+在 ChildA 中修改 text 的值
+
+```javascript
+imoprt {connect} from "react-redux"
+const ChildA = (props)=>{
+    const handelClick = ()=>{
+        console.log(props)
+        props.setText()
+    }
+    return (
+    	<div>
+        	<h2>this is ChildA</h2>
+        	<button onClick={handelClick}>Click<button/>
+        </div>
+    )
+}
+const setText = {
+    setText（）{
+    	return {
+    		type:"setText",
+    		text:"fuck react"
+		}
+	}
+}
+export default connect(null,setText)(childA)
+```
+
+在 childB 中拿到 text 的值
+
+```jsx
+import {connect} from "react-redux"
+const ChildB = (props)=>{
+    return (
+    	<div>
+        	<h2>this is ChildB</h2>
+            <h3>this is react-redux {props.text}</h3>
+        </div>
+    )
+}
+export default connect((state)=>{
+    return {
+        text:state.textReducer.text
+    }
+})(ChildB)
 ```
 
