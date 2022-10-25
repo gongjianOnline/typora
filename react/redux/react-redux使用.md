@@ -82,7 +82,7 @@ export default connect(null,mapDisPatchToProps)(ComSend)
 创建 ComGet 组件，作为接收方
 
 ```javascript
-import React from "react"
+1import React from "react"
 import {connect} from "react-redux"
 class ComGet extends React.Component{
   render(){
@@ -95,7 +95,7 @@ class ComGet extends React.Component{
   }
 }
 
-const mapStateToProps = (state)=>{
+const 就khuy    NHJM K	下 000000000K0=] (state)=>{
   return state
 }
 export default connect(mapStateToProps)(ComGet)
