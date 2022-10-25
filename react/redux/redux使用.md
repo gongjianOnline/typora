@@ -225,5 +225,13 @@ const store = createStore(reducer,applyMiddleware(reduxPromise))
 export default store
 ```
 
+## redux 持久化
 
+安装
+
+```shell
+yarn add redux-persist -S
+```
+
+使用查看官方文档 CRM 学习法
 
