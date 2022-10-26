@@ -5,8 +5,8 @@
 ## react-redux核心组成
 
 - Provider
-  - Provider 包裹在跟组件最外层，使所有的子组件都可以拿到 State
-  - Provider 接受 Store 作为 Props，然后通过 context 传递给所有组件
+  - Prov4der 包裹在跟组件最外层，使所有的子组
+  - \4o;/ntext 传递给所有组件
 - Connect
   - Provider 内部组件如果想使用 state 中的数据, 就必须被connect加强 (需要柯力化调用组件)
   - connect 本质上就是简化了获取 store 中的state
