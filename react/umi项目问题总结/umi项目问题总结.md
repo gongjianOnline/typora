@@ -187,3 +187,28 @@ export default Icon;
 
 ```
 
+---
+
+## umi修改浏览器 title 和 ICON
+
+在 .umirc.ts 文件中添加配置
+
+```tsx
+title:'龚箭图床',
+links:[
+    {rel:'icon',href:""}
+],
+```
+
+---
+
+## umi 更改路由模式
+
+在 .umirc.ts 文件中添加配置
+
+```tsx
+history:{
+    type:'hash'
+},
+```
+
