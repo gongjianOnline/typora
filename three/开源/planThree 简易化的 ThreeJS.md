@@ -1,10 +1,32 @@
 # planThree 简易化的 ThreeJS
+<p align="center">
+    <a href="">
+        <img src="https://img.shields.io/badge/planThree-V1.0.5-orange" alt="uuid4">
+    </a>
+    <a href="">
+        <img src="https://img.shields.io/badge/uuid4-2.0.3-brightgreen" alt="uuid4">
+    </a>
+    <a href="">
+        <img src="https://img.shields.io/badge/three-0.145.0-brightgreen" alt="uuid4">
+    </a>
+    <a href="">
+        <img src="https://img.shields.io/badge/vue-2.0-brightgreen" alt="uuid4">
+    </a>
+    <a href="">
+        <img src="https://img.shields.io/badge/vue-3.0-brightgreen" alt="uuid4">
+    </a>
+    <a href="">
+        <img src="https://img.shields.io/badge/tween-18.0-green" alt="uuid4">
+    </a>
+    <a href="">
+        <img src="https://img.shields.io/badge/OSCS-%E5%AE%89%E5%85%A8%E8%AE%A4%E8%AF%81%E9%80%9A%E8%BF%87-blue" alt="uuid4">
+    </a>
+    <div style="text-align:center">
+        <a href="https://www.murphysec.com/accept?code=9e9d3d9aec8fc757c0278170632ee97c&type=1&from=2&t=2" alt="Security Status"><img src="https://www.murphysec.com/platform3/v3/badge/1611442922361237504.svg" /></a>
+    </div>
 
-本工具库仅限于学习使用，如进行商务用途出现问题作者概不负责
-
+</p>
 本插件是基于 ThreeJs 的二次封装, 可以让使用者通过API调用方式快速创建自己的Three场景, 工具库中提供了基础交互功能,更多功能持续更新中
-
-[github地址](https://github.com/gongjianOnline/PlainThree)    [码云](https://gitee.com/gongjianweb/plain-three)    [npm地址](https://www.npmjs.com/package/plain-three)
 
 ## 安装
 
@@ -12,6 +34,8 @@
 npm install plain-three -S
 or 
 yarn add plain-three -S
+or
+pnpm add plain-three
 ```
 
 ## 引入
@@ -37,7 +61,6 @@ const app = PlainThree({
 ```
 
 配置说明
-
 | 配置项                  | 类型          | 是否必填 | 说明                       |
 | ----------------------- | ------------- | -------- | -------------------------- |
 | elementId               | string        | 是       | 实例挂载的HTML元素的id     |
@@ -65,7 +88,7 @@ const app = PlainThree({
 })
 ```
 
-createSceneModule返回一个 promise 对象,成功返回 true ,失败返回报错信息
+createSceneModule返回一个 promise 对象, 成功返回模型的实例对象（可用于模型实例的二次开发），失败则返回错误信息
 
 配置项
 
@@ -87,6 +110,7 @@ await app.createParts({
     rootPath: "/car/",
     moduleFile: "acura-rlx-2021.quads.gltf",
     position: [0, 1, 0],
+    zoom:[0,0,0]
     userData: {
         name: "车辆",
         carCode: "京B2022",
@@ -95,7 +119,20 @@ await app.createParts({
 });
 ```
 
-createParts返回一个 promise 对象,成功返回 true ,失败返回报错信息, 
+**在V1.0.4版本中，支持对模型的帧动画操作**；createParts返回一个 promise 对象,成功返回对象实例和关键帧动画实例 ,失败返回报错信息。
+
+返回示例
+
+```javascript
+{
+    gltf:{}, // 模型对象
+    ItemAnimations:{ //动画属性
+        id:'' , //生成当前该模型动画的uuid，
+        example:"", // 当前的动画加载器实例
+        animationAction：exampleItem.clipAction(gltf.animations[2], // 当前的动画源
+    }
+}
+```
 
 配置项
 
@@ -106,6 +143,7 @@ createParts返回一个 promise 对象,成功返回 true ,失败返回报错信�
 | userData   | object | 是       | 自定义数据集合 |
 | moduleName | string | 是       | 模型名称       |
 | position   | array  | 是       | 模型位置       |
+| zoom       | arrat  | 是       | 模型缩放       |
 
 ---
 
@@ -134,7 +172,7 @@ app.getQuery("车辆")
 ```javascript
 app.createMarker({
     name:'车辆',
-    url:'图片的CDN地址,推荐使用线上的资源"
+    url:"图片的CDN地址,推荐使用线上的资源",
     position:[0,2,5],
     scale:[1,1,1],
     userData:{
@@ -208,7 +246,7 @@ app.clearScene();
 
 ```javascript
 window.addEventListener("dblclick", (event) => {
-  	let result = this.app.click(event);
+    let result = this.app.click(event);
     console.log("点击事件", result);
 });
 ```
@@ -225,3 +263,64 @@ window.addEventListener("dblclick", (event) => {
 | ------ | ------------- | ----------------------------- |
 | obj    | object        | 当前鼠标点击拾取物体          |
 | point  | array[number] | 当前鼠标点击的场景坐标[x,y,z] |
+
+---
+
+### 10.外部模型的关键帧动画使用
+
+参考第三节的创建物体后返回的实例对象
+
+代码示例
+
+```javascript
+ var botany = await this.app.createParts({
+     rootPath:"./threeModule/zhizhu/",
+     moduleFile: "zhizhu.glb",
+     position: [-15,5,20],
+     zoom:[2,2,2],
+     moduleName: "蜘蛛",
+})
+console.log("蜘蛛模型",botany) // 此时的变量已经返回了模型实例和动画实例
+//播放帧动画
+let {exampleItem,ItemAnimations} = botany.animation;
+ItemAnimations.animationAction = exampleItem.clipAction(this.insect.gltf.animations[index])
+ItemAnimations.animationAction.play()
+
+/*如果出去动画停止，或者切换动画时，需要调用stop()停止当前的动画*/
+ItemAnimations.animationAction.stop()
+```
+
+### 11. HTML标注信息
+
+```javascript
+this.app.createHtml(options)
+```
+
+参数
+
+| 参数     | 类型                     | 是否选填 | 描述                               |
+| -------- | ------------------------ | -------- | ---------------------------------- |
+| HTMLId   | string                   | 是       | 传递模型的uuid，用于html的唯一标识 |
+| Mesh     | object                   | 是       | 模型的实例对象                     |
+| position | array[x:number,y:number] | 是       | 用于附加HTML浮窗的位置             |
+
+示例
+
+```javascript
+const moduleHtmlData = []; // 用于存放每个模型的id和数据，用于HTML循环创建元素
+var botany = await this.app.createParts(options) //创建外部模型
+var {scene} = this.botany.gltf;
+moduleHtmlData.push({
+    uuid:scene.uuid,
+    htmlValue:{
+      title:"xxx",
+      w:"xxx",
+      w2:"xxx"
+    }
+})
+this.app.createHtml({
+    HTMLId:scene.uuid,
+    Mesh:scene,
+    position:[40,-130]
+})
+```
