@@ -160,3 +160,123 @@ window.api.getSaveData() // 通过预处理器通知主进程
 
 ---
 
+## 主进程主动向渲染进程通信
+
+main.js
+
+```js
+const mainWindow = new BrowserWindow({
+   	...
+    /**指定预加载脚本，用于主线程和渲染线程通信 */
+    webPreferences:{
+      preload:path.resolve(__dirname,'preload.js'),
+      nodeIntegration:true, // 同意 预处理进程使用 node 的模块
+    }
+ })
+ mainWindow.loadFile(path.resolve(__dirname,"index.html"))
+/*mainWindow 表示当前窗口的对象,通过 webContents 可以获取渲染进程中的对象(获取通信的方式也是通过预处理器来传递的,所有 webContents 也可以调用到 preload 中的内容)*/
+mainWindow.webContents.send("toRender",100);
+```
+
+preload.js
+
+```js
+const { contextBridge,ipcRenderer } = require("electron");
+/**
+ * 创建供渲染进程访问的函数 
+ * 使用渲染进程可以直接通过 window 获取 api 里面的函数方法
+ * */
+contextBridge.exposeInMainWorld('api',{
+  toRender:(callback)=>{
+    ipcRenderer.on('test', callback)
+  }
+})
+```
+
+render.js
+
+```js
+  const testFun = (event,value)=>{
+    testContainer.innerHTML = Number(testContainer.innerHTML) + value;
+  }
+  window.api.toRender(testFun)
+```
+
+---
+
+## 双向通信
+
+### 基础版
+
+主进程 main.js 
+
+```js
+const createWindow = ()=>{
+  const mainWindow = new BrowserWindow({
+   ...
+    webPreferences:{
+      preload:path.resolve(__dirname,'preload.js'),
+      nodeIntegration:true, // 同意 预处理进程使用 node 的模块
+    }
+  })
+
+  mainWindow.loadFile(path.relative(__dirname,"index.html"))
+}
+app.whenReady().then(()=>{
+  createWindow()
+})
+
+ipcMain.on("mainData",(event,value)=>{
+  console.log("mainData",value);
+  /*获取当前窗口示例，向渲染进程通信*/
+  BrowserWindow.fromWebContents(event.sender).send("toRender","向渲染进程返回消息")
+})
+
+```
+
+预处理器 preload.js
+
+```js
+const {ipcRenderer,contextBridge} = require("electron");
+/**
+ * 创建供渲染进程访问的函数 
+ * 使用渲染进程可以直接通过 window 获取 api 里面的函数方法
+ * */
+contextBridge.exposeInMainWorld("api",{
+  getMainData:()=>{
+    ipcRenderer.send("mainData","向主进程发送信息")
+  }
+})
+/*接受主进程的信息*/
+ipcRenderer.on("toRender",(event,value)=>{
+  console.log(value)
+})
+```
+
+### inovke双向通信
+
+main.js
+
+```js
+ipcMain.handle("test",(event,value)=>{
+    rteurn "xxx"
+})
+```
+
+preload.js
+
+```js
+contextBridge.exposeInMainWorld("api",{
+    setTest:()=>{
+        return ipcRenderer.invoke("test","xxx"); // invoke 返回 promise 对象
+    }
+})
+```
+
+render.js
+
+```js
+ const res = await api.setTest()
+ console.log(res)
+```
+
