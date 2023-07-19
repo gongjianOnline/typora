@@ -259,7 +259,8 @@ main.js
 
 ```js
 ipcMain.handle("test",(event,value)=>{
-    rteurn "xxx"
+    console.log(value);
+    rteurn "invoke 主进程向渲染进程通信"
 })
 ```
 
@@ -267,8 +268,8 @@ preload.js
 
 ```js
 contextBridge.exposeInMainWorld("api",{
-    setTest:()=>{
-        return ipcRenderer.invoke("test","xxx"); // invoke 返回 promise 对象
+    setTest:(value)=>{
+        return ipcRenderer.invoke("test",value); // invoke 返回 promise 对象
     }
 })
 ```
@@ -276,7 +277,7 @@ contextBridge.exposeInMainWorld("api",{
 render.js
 
 ```js
- const res = await api.setTest()
- console.log(res)
+ const result = await windos.api.setTest("渲染进程向主进程通信")
+ console.log(result)
 ```
 
