@@ -2,9 +2,11 @@
 
 ## 快速上手
 
+当前版本为官网最新版本 V25.3.0
+
 ```shell
 yarn init 
-yarn add nodemon electron -D
+yarn add nodemon electron -D 
 ```
 
 配置 package.json 
@@ -253,7 +255,7 @@ ipcRenderer.on("toRender",(event,value)=>{
 })
 ```
 
-### inovke双向通信
+### invoke双向通信
 
 main.js
 
@@ -280,4 +282,146 @@ render.js
  const result = await windos.api.setTest("渲染进程向主进程通信")
  console.log(result)
 ```
+
+---
+
+## 进程隔离与沙盒模式
+
+### 进程隔离
+
+在 electron 中预处理器会默认隔离主进程和渲染进程，例如
+
+```js
+contextBridge.exposeInMainWorld("api",{
+    test:()=>{
+        console.log("this is test")
+    }
+})
+```
+
+如上面代码 在 preload 预处理器文件中需要这样注册后才能在 渲染进程中 通过 window.api 进行调用， 如果想在 preload 文件中直接通过增加 window 示例的方式，需要接触默认隔离，**解除隔离后渲染进程 和 预处理进程 都可以使用 node 的全部模块**
+
+配置方式如下：main.js 文件
+
+```js
+const createWindow = ()=>{
+  const mainWindow = new BrowserWindow({
+   ...
+    webPreferences:{
+      preload:path.resolve(__dirname,'preload.js'),
+      nodeIntegration:true, // 同意 预处理进程使用 node 的模块
+      contextIsolation:false, // 管理隔离状态
+    }
+  })
+  mainWindow.loadFile(path.relative(__dirname,"index.html"))
+}
+```
+
+如上配置后 preload 预处理文件可以直接对 window 实例添加方法，共渲染进程使用，代码如下
+
+```js
+// preload.js
+window.api = {
+    test:()=>{
+        console.log("this is test")
+    }
+}
+
+// render.js 渲染进程
+window.api.test();
+// main.js 主进程也可通过 global 对象调用
+global.api.test()
+```
+
+### 沙盒模式
+
+开启沙河模式后 只有 预处理文件 （preload.js）可以用使用 node 的全部模块（相比接触进程隔离更加安全）
+
+配置窗口对象
+
+```js
+const createWindow = ()=>{
+  const mainWindow = new BrowserWindow({
+    ...
+    webPreferences:{
+      preload:path.resolve(__dirname,'preload.js'),
+      nodeIntegration:true,
+      contextIsolation:false, // 开启沙盒模式
+    }
+  })
+  ...
+}
+```
+
+---
+
+## 动态窗口尺寸
+
+```js
+mainWidow.center() // 窗口居中
+mainWidow.setBounds({
+    width:
+    height:
+    x:
+    y:
+},true) // 开启动画
+```
+
+---
+
+## 菜单管理
+
+创建 menu.js 统一管理菜单
+
+**值得注意的在 mac 平台中 第一个菜单为软件本身的示例，需要单独兼容**
+
+```js
+const {Menu} = require("electron");
+const createMenu = ()=>{
+  console.log("111");
+  const menu = [
+    {
+      label: 'File', // 一级菜单名称
+      submenu: [ // 子菜单对象
+        { 
+          label: 'New',  // 二级菜单名称
+          accelerator: 'CmdOrCtrl+N',  // 快捷键
+          click: () => { /* 处理点击事件 */ }  // 自定义事件
+        },
+        { 
+          label: 'Open', 
+          accelerator: 'CmdOrCtrl+O', 
+          click: () => { /* 处理点击事件 */ } 
+        },
+        { 
+          type: 'separator'  // 分割线
+        },
+        { 
+          label: 'Quit', 
+          accelerator: 'CmdOrCtrl+Q', 
+          click: () => { /* 处理点击事件 */ } 
+        }
+      ]
+    },
+    // 其他菜单项...
+  ];
+  const applicationMenu = Menu.buildFromTemplate(menu);
+  Menu.setApplicationMenu(applicationMenu);
+}
+
+module.exports = createMenu;
+```
+
+在 main.js 中引用创建菜单
+
+```js
+const {app,BrowserWindow, ipcMain} = require("electron");
+const createMenu = require("menu.js")
+app.whenReady().then(()=>{
+    ...
+    createMenu() // 创建菜单
+})
+```
+
+---
 
