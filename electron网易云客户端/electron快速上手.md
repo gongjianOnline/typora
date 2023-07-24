@@ -461,6 +461,7 @@ ipcMain.on("handelContextmenu",(event)=>{
       label:"退出",
       click:()=>console.log("退出应用")
     }
+    { type: 'separator' }, //菜单分割线
   ]
   const menu = Menu.buildFromTemplate(template)
   menu.popup(BrowserWindow.fromWebContents(event.sender))
