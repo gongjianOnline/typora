@@ -204,6 +204,18 @@ render.js
   window.api.toRender(testFun)
 ```
 
+### webContents 问题
+
+#### webContents 和 fromWebContents 有啥区别 
+
+​	webContent 是 electron 中的一个类，用于控制和操作渲染进程的内容，常用来与渲染进程通信、导航、执行 JS 代码、注入 css等。可以通过`BrowserWindow`实例的`webContents ` 对象来访问当前窗口对象，例如 `mainWindow.webContents` 将返回 `mainWindow` 的窗口对象
+
+​	formWebContents 是 BrowserWindow 的静态方法, 接受一个 `webContents` 对象为参数, 返回与 `webContents` 对象关联的 `BrowserWindow` 实例。 例如 `BrowserWindow.fromWebContents(webContents)`将返回与给定`webContents`对象关联的`BrowserWindow`实例。这个方法通常用于在主进程中查找与特定`webContents`对象相关联的窗口。
+
+​	总结 `fromWebContents` 方法用于在主进程中查找指定的 `webContents` 对象相关的窗口；webContents 用于控制操作渲染进程对象。
+
+
+
 ---
 
 ## 双向通信
@@ -378,7 +390,6 @@ mainWidow.setBounds({
 ```js
 const {Menu} = require("electron");
 const createMenu = ()=>{
-  console.log("111");
   const menu = [
     {
       label: 'File', // 一级菜单名称
@@ -424,4 +435,35 @@ app.whenReady().then(()=>{
 ```
 
 ---
+
+## 右键菜单
+
+在预加载进程中监听 dom 的右键事件
+
+```js
+/*preload.js*/
+const {ipcRenderer} = require("electron");
+window.addEventListener("contextmenu",()=>{
+  console.log("右键测试");
+  ipcRenderer.send("handelContextmenu")
+})
+```
+
+在主进程中通信中创建右键菜单
+
+```js
+/**创建右键菜单 */
+const {ipcMain, Menu, BrowserWindow} = require('electron')
+
+ipcMain.on("handelContextmenu",(event)=>{
+  const template = [
+    {
+      label:"退出",
+      click:()=>console.log("退出应用")
+    }
+  ]
+  const menu = Menu.buildFromTemplate(template)
+  menu.popup(BrowserWindow.fromWebContents(event.sender))
+})
+```
 
