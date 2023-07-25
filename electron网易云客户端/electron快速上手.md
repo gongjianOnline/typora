@@ -443,6 +443,7 @@ app.whenReady().then(()=>{
 ```js
 /*preload.js*/
 const {ipcRenderer} = require("electron");
+// 全局监听右键点击事件
 window.addEventListener("contextmenu",()=>{
   console.log("右键测试");
   ipcRenderer.send("handelContextmenu")
@@ -467,4 +468,71 @@ ipcMain.on("handelContextmenu",(event)=>{
   menu.popup(BrowserWindow.fromWebContents(event.sender))
 })
 ```
+
+---
+
+## dialog 弹窗
+
+**在只能在主进程中使用, 详细配置见官方文档**
+
+### [信息窗](https://www.electronjs.org/zh/docs/latest/api/dialog#dialogshowmessageboxbrowserwindow-options)
+
+```js
+const {dialog} = require("electron")
+/*
+* result 返回一个对象 
+*  response 表示 buttons 中点击的下标
+*  checkboxChecked 表示 checkboxLabel 属性是否被勾选
+*/
+const result = await dialog.showMessageBox({
+	title:'提示',
+	detail:'确认要退出吗',
+	buttons:["取消","确定"],
+    cancelId:0, // 按下 esc 时走 取消 选项
+    checkboxLabel:"记住我的选择"
+})
+```
+
+### [错误弹窗](https://www.electronjs.org/zh/docs/latest/api/dialog#dialogshowerrorboxtitle-content)
+
+```js
+dialog.showErrorBox("温馨提示","下次将不在提示退出弹窗")
+```
+
+### [选择文件](https://www.electronjs.org/zh/docs/latest/api/dialog#dialogshowopendialogbrowserwindow-options)
+
+```js
+ipcMain.handle("checkFile",async (event)=>{
+  /*选择文件，返回选中文件的绝对路径*/
+  const {filePaths} = await dialog.showOpenDialog({
+    title:"选择文件",
+    filters:[{name:"files"}],
+    properties:["openFile","multiSelections"]
+  })
+  return filePaths
+})
+```
+
+### [保存文件](https://www.electronjs.org/zh/docs/latest/api/dialog#dialogshowsavedialogbrowserwindow-options)
+
+```js
+/*返回保存文件的路径*/
+const {filePath} = await dialog.showSaveDialog({
+    title:'保存文件'
+})
+/*使用 node fs 模块将一个文件内容写入到另一个文件中*/
+fs.readFile(fliePath,'utf8',(err,data)=>{
+    if(err){throw err};
+    // 写入目标文件
+    fs.writeFile(filePath,data,"utf8",(err)=>{
+      if(err){throw err}
+      dialog.showMessageBox({
+        title:'提示信息',
+        detail:"文件成功写入"
+      })
+    })
+  })
+```
+
+---
 
