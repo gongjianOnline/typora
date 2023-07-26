@@ -48,10 +48,11 @@ const createWindows = ()=>{
   // 网页套壳
   // mainWindow.loadURL("http://www.gjweb.top")
   // 解析项目文件
-  mainWindow.loadFile(path.resolve(__dirname,"index.html"))
-
+  mainWindow.loadFile(path.resolve(__dirname,"index.html"));
+  // 控制窗口缩放比例 1：1
+  mainWindow.setAspectRatio(1);
   // 自动打开开发者工具
-  mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools();
 }
 app.whenReady().then(()=>{
   createWindows(); // 创建窗口
@@ -532,6 +533,54 @@ fs.readFile(fliePath,'utf8',(err,data)=>{
       })
     })
   })
+```
+
+---
+
+## 托盘图标设置
+
+规范性: mac 系统用中图标为黑白色, windows 系统可以为彩色; 尺寸: 32*32 144dpi
+
+```js
+/*模块抽离 使用 createTray.js*/
+const {Menu,tray} = require("electron");
+cons {resolve} = require("path");
+const createTray = ()=>{
+  // 设置托盘图标的图片 需要放在 electron 项目的 resources 文件下面
+  const tray = new Tray(resolve(__dirname,"../../resources/icon.png"));
+  // 设置托盘图标右键的菜单，菜单属性同 Menu 配置一致
+  const contextMenu = Menu.buildFromTemplate([{ label: '退出', role: 'quit' }])
+  // 鼠标悬停到托盘图标时的提示信息
+  tray.setToolTip('hello electron')
+  tray.setContextMenu(contextMenu)
+}
+module.exports = {createTray}
+```
+
+在 mian.js 中调用
+
+```js
+const {app} = require("electron");
+const {crateTray} = require("createTray.js")
+
+app.whenReady().then(()=>{
+    createTray()
+})
+```
+
+---
+
+## 状态栏图标设置
+
+```js
+/*windos中在 BrowserWindow 示例中配置*/
+new BrowserWindow({
+    skipTaskbar:flase,// 隐藏托盘图标
+})
+/*在 mac 在 whenReady 中配置*/
+app.whenReady().then(()=>{
+    app.dock.hide() // 隐藏托盘图标
+})
 ```
 
 ---
