@@ -1,8 +1,8 @@
 # electron快速上手
 
-## 快速上手
+## electron 起手式
 
-当前版本为官网最新版本 V25.3.0
+当前版本为官网最新版本 V25.3.0，实践中发现在更改镜像的情况下使用 `npm `和 `pnpm `下载 `electron ` 都会等待时间过长的问题，推荐使用 `yarn`  
 
 ```shell
 yarn init 
@@ -584,4 +584,77 @@ app.whenReady().then(()=>{
 ```
 
 ---
+
+## [electron-vite](https://cn-evite.netlify.app/guide/#%E6%80%BB%E8%A7%88) 构建打包
+
+### 构建
+
+```shell
+pnpm install vite -g
+pnpm create @quick-start/electron
+✔ Project name: … <electron-app>
+✔ Select a framework: › vue
+✔ Add TypeScript? … No / Yes
+✔ Add Electron updater plugin? … No / Yes
+✔ Enable Electron download mirror proxy? … No / Yes
+
+Scaffolding project in ./<electron-app>...
+Done.
+
+```
+
+### 配置热更新
+
+```json
+/*package.json*/
+{
+    "scripts":{
+        "dev": "electron-vite dev --watch",
+    }
+}
+```
+
+### 指定的目录功能
+
+- build 文件夹可存放桌面图标
+- resources 文件夹可存放托盘图标
+- src 文件包括 `main` 主线程文件夹 `preload` 预加载文件夹 和 `renderer` 渲染文件夹（该文件夹主要存放vue或react等）
+
+### 配置桌面图标
+
+在 build 文件存放 icon.png 图片，作为桌面图标
+
+mac 系统要求 尺寸：512 * 512
+
+windows 系统要求尺寸不小于： 216*216
+
+### electron打包
+
+在 `package.json` 中配置
+
+```json
+{
+    "name":"项目名称",
+    "version":"版本号"
+}
+```
+
+在 `electron-builder.yml` 中配置
+
+```yml
+appId: com.自定义.自定义
+productName: 软件的名称
+```
+
+在 mac 系统中只能打包 mac 版本， **在mac中搭建虚拟机也无法打包出 windows 的版本**
+
+```shell
+pnpm build:mac
+```
+
+在 windows 版本中打包
+
+```shell
+pnpm build:win
+```
 
