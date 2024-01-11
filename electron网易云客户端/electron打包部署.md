@@ -34,7 +34,7 @@ export default router
 
 ---
 
-## 天坑三：跨域问题
+## 填坑三：跨域问题
 
 可以直接配置vue中的proxy代理解决，方法同平时vue项目的配置相同
 
@@ -87,4 +87,59 @@ export default{
 }
 </script>
 ```
+
+### 使用 electron-vite 构建的跨域问题
+
+在 electron.vite.config.ts
+
+```ts
+import { resolve } from 'path'
+import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import vue from '@vitejs/plugin-vue'
+
+export default defineConfig({
+  main: { /*主进程配置*/
+    plugins: [externalizeDepsPlugin()]
+  },
+  preload: { /*中间层配置*/
+    plugins: [externalizeDepsPlugin()]
+  },
+  renderer: { /*渲染层配置*/
+    resolve: {
+      alias: {
+        '@renderer': resolve('src/renderer/src')
+      }
+    },
+    plugins: [vue()],
+    server:{ 
+      proxy:{ /*本地服务代理配置*/
+        // 接口地址代理
+        '/api': {
+          target: '',
+          secure: false,
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/api/, '')
+        },
+      }
+    }
+  }
+})
+
+```
+
+---
+
+## 填坑四: 打包时因网络导致拉取不到部分git项目导致的打包失败
+
+通常报错 winCodeSign \ nsis \ nsis-resources 拉去失败
+
+解决方法：手动下载相关包放到指定目录中，下载地址查看报错信息中的 github 地址
+
+```shel
+C:\Users\YOU_USER_NAME\AppData\Local\electron-builder\Cache\nsis\nsis-3.0.4.1
+C:\Users\YOU_USER_NAME\AppData\Local\electron-builder\Cache\nsis\nsis-resources-3.4.1
+C:\Users\15031\AppData\Local\electron-builder\Cache\winCodeSign\winCodeSign-2.6.0
+```
+
+**当完成一项配置后需要手动删除项目中的 out 和 dist 目录，重新执行打包命令**
 

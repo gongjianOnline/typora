@@ -275,7 +275,7 @@ main.js
 ```js
 ipcMain.handle("test",(event,value)=>{
     console.log(value);
-    rteurn "invoke 主进程向渲染进程通信"
+    return "invoke 主进程向渲染进程通信"
 })
 ```
 
@@ -549,7 +549,9 @@ const createTray = ()=>{
   // 设置托盘图标的图片 需要放在 electron 项目的 resources 文件下面
   const tray = new Tray(resolve(__dirname,"../../resources/icon.png"));
   // 设置托盘图标右键的菜单，菜单属性同 Menu 配置一致
-  const contextMenu = Menu.buildFromTemplate([{ label: '退出', role: 'quit' }])
+  const contextMenu = Menu.buildFromTemplate([
+      { label: '退出', role: 'quit' ,click:()=>{console.log("clicik")}}
+  ])
   // 鼠标悬停到托盘图标时的提示信息
   tray.setToolTip('hello electron')
   tray.setContextMenu(contextMenu)
@@ -581,6 +583,49 @@ new BrowserWindow({
 app.whenReady().then(()=>{
     app.dock.hide() // 隐藏托盘图标
 })
+```
+
+---
+
+## 右上角关闭、缩小、窗口
+
+创建 window.ts 文件 抽离模块
+
+```ts
+import { BrowserWindow, ipcMain } from "electron";
+
+/**关闭窗口 */
+ipcMain.on("handelClose",()=>{
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if(focusedWindow){
+    focusedWindow.hide()
+  }
+})
+/* 最小化窗口 */
+ipcMain.on("handelMinimize",()=>{
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if(focusedWindow){
+    focusedWindow.minimize()
+  }
+})
+/* 窗口最大化 */
+ipcMain.on("handelMaxWindow",()=>{
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if(focusedWindow){
+    focusedWindow.isMaximized()?focusedWindow.restore():focusedWindow.maximize();
+  }
+})
+/* 获取窗口大小的状态 */
+ipcMain.handle("getWindowStatus",()=>{
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  return focusedWindow?.isMaximized()
+})
+```
+
+在主进程引入 index.ts
+
+```ts
+import "./window"
 ```
 
 ---
@@ -622,7 +667,7 @@ Done.
 
 ### 配置桌面图标
 
-在 build 文件存放 icon.png 图片，作为桌面图标
+在 build 文件存放 icon.png 图片，作为桌面图标，**同时将原有的三个文件更改文件名**
 
 mac 系统要求 尺寸：512 * 512
 
