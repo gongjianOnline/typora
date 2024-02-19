@@ -208,7 +208,29 @@ const Home:React.FC<any> = ()=>{
 ```react
 import React from "react"
 import {history} from "umi"
+const pageA:React.FC<any> = ()=>{
+    const handleClick = ()=>{
+        history.push("/pageB?index=100")
+    }
+    return (<div onCLick={()=>handleClick()}>to PageB</div>)
+}
+```
 
+接收查询字符串传参
+
+```react
+import React,{useEffect} from "react"
+import {useSearchParams} from "umi"
+
+const PageB:React.FC<any> = ()=>{
+    const [searchParams, setSearchParams] = useSearchParams();
+	
+    useEffect(()=>{
+        searchParams.get('index')  /*100*/
+        setSearchParams({xxx:hello}) /*此时的地址变成了 /pageB?xxx=hello  */
+    },[])
+    return (<div>this is Page</div>)
+}
 ```
 
 
