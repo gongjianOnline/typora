@@ -103,7 +103,7 @@ pnpm i @umijs/plugins -D
 pnpm i antd axios @ant-design/pro-layout -S
 ```
 
-使用
+### 调用
 
 ```react
 import React from "react";
@@ -123,7 +123,48 @@ const Home:React.FC<any> = ()=>{
 
 ## 部署 history 模式
 
+### 问题一: umi4 打包后页面空白,并且部分静态资源404
 
+在 `.umirc.ts` 中配置
+
+```ts
+export default defineConfig({
+    base:"/myUmiProject", /*基础地址，适用于部署在非根目录，要和服务端目录名称保持一致*/
+    publicPath::process.env.NODE_ENV === 'production' ? './' : '/', /*用于解决部分静态资源404问题*/
+})
+```
+
+在 `nginx.conf` 中配置
+
+```nginx
+http {
+    ...
+    server {
+        ...
+        location /myUmiProject/ {
+            try_files $uri $uri/ /index.html;
+		}
+        ...
+    }
+   
+}
+```
+
+配置完成重载 `nginx` ，运行  `nginx -s reolad`  ; 此时打包后的项目路径应该放在 `nginx/html/myUmiProject` 目录中
+
+### 问题二：umi4 报错找不到 favicon 图标 
+
+在 umi4 中项目并没有 favicon 图标资源，需要单独在 `.umirc.ts` 配置
+
+```ts
+export default defineConfig({
+    ...
+    favicons:[ /*可引用在线图标作为标签页的icon*/
+        "https://img.alicdn.com/tfs/TB1YHEpwUT1gK0jSZFhXXaAtVXa-28-27.svg" /*该图标地址为 umi 官方图标
+        */
+    ],
+})
+```
 
 
 
