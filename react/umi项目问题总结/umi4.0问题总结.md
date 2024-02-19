@@ -166,5 +166,52 @@ export default defineConfig({
 })
 ```
 
+---
+
+## umi4 路由传参
+
+### 动态路由传参
+
+`.umirc.ts` 配置路由传参
+
+```ts
+export default defineConfig({
+    routes:[
+        { path: "/:id", component: "login"},
+    ]
+})
+```
+
+在组件中获取参数
+
+```react
+import React from "react";
+import {useParams} from "umi"
+
+const Home:React.FC<any> = ()=>{
+    const params  = useParams();
+    /**
+    * {
+    *   "id": ""
+    * }
+    */
+    return ( <div>hello world</div> )
+}
+```
+
+**动态路由必须要携带参数**
+
+### 查询字符串传参
+
+路由传参示例
+
+```react
+import React from "react"
+import {history} from "umi"
+
+```
+
+
+
 
 
