@@ -1,5 +1,27 @@
 # umi4.0 问题总结
 
+## 布局框架
+
+umi4.0 版本中更新了布局方式,单独创建了 `layout/index.tsx` 文件为默认布局页面     
+
+页面使用 `Outlet ` 组件作为子页面的表示子页面的视口，类似与 `router-view`
+
+示例 
+
+```react
+import React from 'react';
+import { Outlet } from 'umi'
+
+const Page:React.FC<any> = ()=>{
+    return (
+    	<div>
+        	<header>顶部</header>
+            <main> <Outlet/> </main>
+        </div>
+    )
+}
+```
+
 ## 使用 dva
 
 Umi Max 集成了 dva 工具，安装 umi 集成工具
