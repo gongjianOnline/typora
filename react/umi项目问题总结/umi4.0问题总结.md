@@ -72,9 +72,24 @@ export default connect(({menuModel})=>({
 
 ## 路由创建
 
-umi4.0 路由搭建 类似于 vue-router 路由模式, 丢弃了早期 react 的标签式路由, 采用对象式, 示例
+umi4.0 路由搭建 类似于 vue-router 路由模式, 丢弃了早期 react 的标签式路由, 采用对象式, 
+
+示例 `umirc.ts` 中配置路由
 
 ```ts
+export default defineConfig({
+    routes: [
+        { path: "/", component: "login"},
+        { 
+          path: "/layout", 
+          component: "@/layout/index", /*布局页面路由声明*/
+          routes: [
+            {path:"/layout/",component:"user"},/*/layout/ 表示默认显示的子路由*/
+            {path:"/layout/node",component:"nodeList"},
+          ]
+        },
+      ]
+})
 ```
 
 ---
@@ -84,14 +99,29 @@ umi4.0 路由搭建 类似于 vue-router 路由模式, 丢弃了早期 react 的
 ### 安装
 
 ```shell
+pnpm i @umijs/plugins -D
+pnpm i antd axios @ant-design/pro-layout -S
 ```
 
-配置
+使用
 
-```ts
+```react
+import React from "react";
+import { Input,Button,Checkbox,message } from 'antd';
+
+const Home:React.FC<any> = ()=>{
+   return (
+       <div>
+       		<Button>andButton</Button>
+       </div>
+   )
+}
+
 ```
 
+---
 
+## 部署 history 模式
 
 
 
