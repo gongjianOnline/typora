@@ -237,11 +237,111 @@ const PageB:React.FC<any> = ()=>{
 
 ## 路由鉴权
 
+路由鉴权 `wrappers`，在 `umirc.ts` 中配置指定的路由进行鉴权
 
+```ts
+export default defineConfig({
+    ...
+    routes:[
+        { path: "/", component: "home", wrappers: [
+            '@/wrappers/auth',
+        ]},
+    ]
+})
+```
+
+在 `src / wrappers / auth.tsx` 中可以书写鉴权逻辑
+
+```tsx
+/**登录鉴权 */
+import { Navigate } from 'umi';
+
+export const checkAuth = ()=>{
+  const userInfo = localStorage.getItem("userInfo");
+  if (userInfo) {
+    return redirectToHome();
+  } else {
+    return redirectToLogin();
+  }
+}
+
+export const redirectToLogin = ()=>{
+  return <Navigate to="/login" />;
+}
+
+export const redirectToHome = ()=>{
+  return <Navigate to="/home/userInfo" />;
+}
+```
+
+上面代码中判断当进入到 `/home` 页面检查用户是否时登录状态，登录状态存在进入 `/home/userInfo` 否则进入 `/login` 页面， 这种路由鉴权的方式如果时在 `/logoin` 页面就判断用户登录状态实现免登录功能时，由于路由鉴权在路由进入后会一直校验跳转到本页面，就i会出现死循环的情况，下面推荐使用**函数式API做路由登录鉴权**
+
+#### 登录鉴权
+
+修改 ``src / wrappers / auth.tsx` ` 如下
+
+```tsx
+export const checkAuth = ()=>{
+  const userInfo = localStorage.getItem("userInfo");
+  if (userInfo) {
+    return true;
+  } else {
+    return false;
+  }
+}
+```
+
+在要校验的函数组件中，通过 hook 的 useEffect 在组件初始化的时候校验登录状态，已 `login` 页面为例
+
+```react
+import React,{useEffect} from "react"
+import { checkAuth } from "@/wrappers/auth";
+import {history} from "umi"
+const Login:React.FC<any> = ()=>{
+    useEffect(()=>{
+        if(!checkAuth()){
+            /*表示登录状态已存在,直接跳转到home页面*/	
+            history.replace("/home")
+        }
+    },[])
+    return ( <div>this is loginPage</div> )
+}
+```
 
 ---
 
 ## 页面鉴权
 
+页面同样采用登录鉴权的逻辑，不同的是页面鉴权需要高阶函数的方式去调用
 
+示例，判断用户是否有权限访问该模块，实现鉴权逻辑 `src/wrappers/pageAuth.tsx`
+
+```tsx
+/**页面权限鉴权 */
+import AuthComponent from "@/pages/auth";
+
+export const PageAuth = (Component:React.FC)=>()=>{
+  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "");
+  if ((userInfo as any).role !== "admin") {
+    return <AuthComponent />
+  }else{
+    return <Component />;
+  }
+}
+```
+
+在上面代码中，如果用户不是管理员则使用鉴权组件提示用户无权访问，鉴权组件可以是一个普通的函数页面这里不在实现。
+
+使用方法
+
+```react
+import React from "react"
+import { PageAuth } from "@/wrappers/pageAuth";
+const Home:React.FC<any> = ()=>{
+    return ( <div>this is home</div> )
+}
+export default PageAuth(Home)
+```
+
+实现效果当用户角色是 admin 的时候进入 Home 组件，否则进入 AuthComponent 组件
 
