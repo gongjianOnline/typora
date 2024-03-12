@@ -8,6 +8,8 @@ cnpm install sqlite3 knex
 
 注意在使用 yarn 和 pnpm 安装 **sqlite3** 时会安装失败，考虑是镜像问题使用 nrm 转换成了 淘宝镜像，再一次安装后仍然失败，npm的淘宝镜像也存在上述问题，最后使用 cnpm 成功安装了 sqlite3。 但全局的node_module 发生了混乱，导致全部依赖都检索失败，最终删除了 node_module 和 locak 文件，使用 cnpm 重新构建 node_module
 
+**建议使用 yarn 安装 sqlite3@5.1.6，5.1.7 只能使用cnpm安装，但根据cnpm管理器的特点无法扁平化管理依赖文件，打包运行会出现莫名的问题**
+
 ---
 
 ## 初始化数据库和表结构

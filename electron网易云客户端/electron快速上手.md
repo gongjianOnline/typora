@@ -703,3 +703,8 @@ pnpm build:mac
 pnpm build:win
 ```
 
+---
+
+## electron 填坑
+
+建议使用 npm 和 yarn 进行项目打包，新版 electron-vite 需要使用 node v18 以上版本
