@@ -4,9 +4,9 @@
 
 技术点: 服务端发布订阅模式 + SSE推送
 
-技术栈: node Nest.js 
+技术栈: node Nest.js react
 
-服务端
+## 服务端
 
 `app.controller.js`
 
@@ -60,5 +60,63 @@ export class AppService {
 
 现在测试一下接口
 
-![img](https://gjweb.top/wp-content/uploads/2024/04/01-1024x436.gif)
+![](https://gjweb.top/wp-content/uploads/2024/04/QQ%E5%BD%95%E5%B1%8F20240421121816-00_00_00-00_00_30-1.gif)
 
+---
+
+## web端
+
+```ts
+
+import React, { useEffect, useMemo } from 'react';
+import { Button, Divider, notification, Space } from 'antd';
+import type { NotificationArgsProps } from 'antd';
+
+
+
+
+const HomePage:React.FC<any> = ()=>{
+  const [api, contextHolder] = notification.useNotification();
+  const openNotification = (data:any) => {
+    const obj  = JSON.parse(data);
+    const key = `open${Date.now()}`;
+    const btn = (
+      <Space>
+        <Button type="link" size="small" onClick={() => api.destroy()}>
+          已读
+        </Button>
+      </Space>
+    );
+    api.open({
+      message: '有新游客',
+      description:
+        `用户名称：${obj.userName}`,
+      btn,
+      key,
+      onClose: close,
+    });
+  };
+
+  /*连接后端sse接口*/
+  const sse = new EventSource('/sseApi/channel');
+  sse.onmessage = function (event) {
+    openNotification(event.data)
+  }
+
+  return (
+    <>
+    {contextHolder}
+    <Button type="primary" onClick={openNotification}>
+      web端实时推送
+    </Button>
+  </>
+  );
+}
+
+export default HomePage
+
+```
+
+实现效果
+
+![](https://gjweb.top/wp-content/uploads/2024/04/QQ%E5%BD%95%E5%B1%8F20240421130534-00_00_00-00_00_30.gif)
