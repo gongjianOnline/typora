@@ -280,3 +280,43 @@ print(np.unique(arr))
 ```
 
 ## 基本运算
+
+### 5.1 基本运算,即对应元素直接运算即可
+
+```python
+import numpy as np
+arr1 = np.array([10,20,30,40])
+print(arr1)
+arr2 = np.arange(4)
+print(arr2)
+
+arr3 = arr1 + arr2
+print(arr3)
+
+arr4 = np.array([[1,2],[3,4]])
+arr5 = np.array([[1,2],[3,4]])
+arr6 = arr4 * arr5
+print(arr6)
+"""
+[10 20 30 40]
+[0 1 2 3]
+[10 21 32 43]
+[[ 1  4]
+ [ 9 16]]
+"""
+```
+
+### 5.3 行数相反
+
+```python
+arr1 = np.array([[1,2,3],[4,5,6]])
+arr2 = np.array([[9,8],[1,2],[0,0]])
+
+arr3 = arr1.dot(arr2)
+print(arr3)
+"""
+[[11 12]
+ [41 42]]
+"""
+```
+
