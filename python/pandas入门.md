@@ -188,3 +188,252 @@ data
 
 ---
 
+## DataFrame常用属性介绍
+
+### 1. DataFrame 常用属性
+
+```python
+# 1. 加载数据源,获取 df 对象
+df = pd.read_csv("data/scientists.csv")
+# 2. 演示 df 对象的常用属性
+print(df.ndim)			# 轴(几维数组,就是几轴) 2
+print(df.shape)			# 维度(几行几列) (8,5)
+print(df.size)			# 行数 * 列数,包括 NAN 40
+
+print(df.columns)		# 获取列名
+print(df.index)			# 获取 df 对象的 索引列的值
+print(df.value)			# 获取数据
+```
+
+### 2. DataFrame 对象常用函数
+
+```python
+print(len(df))			# 行数 8
+df.head()				# 获取前五行
+df.tail()				# 获取后五位
+df.keys()				# 获取所有的列名， 等于 df.columns
+df.info()				# 查看 df 对象的基本信息
+df.describe()			# 查看 df 的统计信息
+df.describe(exclude=['int','float'])		# 查看 df 对象的统计信息,除了 int 和 float
+df.describe(include="all")					# 查看 df 对象的统计信息,所有类型都看
+df['Age'].mean()		# 查找各列的平均值
+df.max()				# 查找各列的最大值
+df.min()				# 查找各列的最小值
+df.count()				# 统计各列的出现次数
+df.hist()				# 绘制直方图
+```
+
+### 3. DataFrame 的布尔索引
+
+和 series 用法基本一致
+
+```python
+"""
+需求: 查找 movie.csv 文件中,电影时长 > 平均时长的 电影信息
+读取数据源文件,获取 DF 对象
+"""
+movie_df = pd.read_csv("data/movie.csv")
+movie_df.head()
+
+movie_df[movie_df.duration > movie_df.duration.mean()]
+```
+
+### 4. DataFrame 对象计算
+
+```python	
+"""
+1. DataFrame 对象和数值运算,就是把数值作用到 每个 DataFrame 身上
+"""
+df = pd.read_csv("data/scientists.csv")
+df*2
+
+# 2. df 和 df 运算,则对应元素直接运行即可,如果两个 df 之间索引不匹配,则用 NAN 填充
+df + df
+```
+
+### 5. 更改 Series 和 DataFrame 对象的 行索引,列名
+
+#### 5.1 读取文件后,设置行索引
+
+```python
+movie_df = pd.read_csv("data/movie.csv")
+movie_df.head()
+
+# 2. 设置 movie_title(电影名),行索引
+"""
+在 pandas 中,90%以上的函数,都是在源数据拷贝一份进行修改,并返回副本,而这列函数都有一个特点,即 inplace 参数
+默认 inplace = False , 即: 返回副本,不修改源数据,如果  inplace = True,则是直接修改源数据
+new_movie = movie.set_index('movie_title')
+new_movie.head()
+"""
+movie_df.set_index('movie_title')
+```
+
+#### 5.2 读取文件时,设置航索引
+
+```python
+# 1. 读取数据源文件,获取 df 对象, 指定 电影名为索引列
+movie_df = pd.read_csv("data/movie.csv",index_col='movie_title')
+movie_df.head()
+```
+
+#### 5.3 取消设置的行索引,归为:系统自动提供的 0~n
+
+```python
+movie_df.reset_index(inplace=True)
+movie_df.head()
+```
+
+### 6.  修改 DataFrame 行索引和列名
+
+```python
+# 1. 读取数据源文件,获取 df 对象,指定行索引
+movie = pd.read_csv("data/movie.csv",index_col="movie_title")
+movie
+```
+
+#### 方法一: rename() 函数直接修改
+
+```python
+# 2. 获取 前五个列名,为方便后续操作
+movie.index[5]
+# 3. 获取 前五个行索引 方便后面更改
+movie.colums[5]
+# 4. 具体修改列名 和 行索引的动作
+idx_name = {'Avatar':'阿凡达',"Pirates of the Caribbean: At World's End":"加勒比海盗"}
+col_name = {'color':"颜色"}
+
+movie.rename(index=idx_name,columns=col_name)
+```
+
+#### 方法二：将 index 和 column 属性提取出来，修改之后在放回去
+
+```python
+movie = pd.read_csv("data/movie.csv",index_col='movie_title')
+idx_list = movie.index.tolist()
+col_list = movie.columns.tolist()
+
+idx_list[0] = "阿凡达"
+col_list[0] = "颜色"
+
+movie.index = idx_list
+movie.colums = col_list
+
+movie.head()
+```
+
+### 7. DataFrame 添加 删除 插入列
+
+```python
+# 1. 添加列，格式为 df['列名'] = 列值
+# 新增 1 列,has_sen=0,表示是否看过这个电影 0 没看 1 看过
+movie['has_seen'] = 0
+```
+
+```python
+# 2. 删除列
+movie.drop("has_seen",axis='colums',inplace=True)
+movie
+```
+
+```python
+# 插入列 在索引 1 的位置插入 profit列,他的(总盈利) = gross(总收入) - budget(总预算)
+# insert() 函数, 不是返回副本,而是在 源数据上直接修改
+movie.insert(loc=1,column="profit",value=movie['gross'] - movie.budget)
+movie
+```
+
+### 8. DataFrame 导入导出数据
+
+#### 8.1 pickle 文件
+
+如果保存的对象是计算的中间结果,或者保存的对象以后在 python 中复用,可以把对象保存为 .pickle 文件
+
+如果保存成 pickle 文件,只能在 python 中使用
+
+文件扩展名可以使 .p .pkl .pickle
+
+格式
+
+```python
+scientists_name = pd.read_pickle("xxx.pickle")
+print(scientists_name)
+```
+
+#### 8.2 csv 文件
+
+数据协作和共享的首选格式
+
+```python
+names.to_csv("xxx.csv")
+# 设置分隔符 \t
+names.to_csv("xxx.csv",sep="\t")
+# 不在 csv 文件中写行名
+names.to_csv("xxx.csv",index=False)
+```
+
+#### 8.3 excel 文件
+
+Series 这种数据不支持 to_excel 方法,需要先把 Series 转成 DataFrame
+
+```python
+name_df = names.to_frame()
+import xlwt
+names_df.to_excel("xxx.xls")
+
+# 把 DataFrame 保存为 excel
+scoentists.to_excel("xxx.xlsx",sheet_name="表名",index=False)
+```
+
+读取
+
+```python
+pd.read_excel("xxx.xlsx")
+"""
+pandas 读写 excel 需要额外安装三个包
+pip install -i xlwt openpyxl xlrd
+"""
+```
+
+#### 8.4 其他数据格式
+
+feather 文件 用于存储二进制对象,同时可以在R语言中使用,通常用于中间数据格式(python和R之间的数据传递),一般不用于保存最终数据
+
+其他导出方法: 
+
+to_clipboard	       把数据保存在系统剪切板 \ 方便黏贴
+
+to_dict			 把数据传承 python字典
+
+to_hdf			  把数据保存为 HDF 格式
+
+to_html		        把数据转成 HTML 格式
+
+to_json			 把数据转换成 JSON 字符串
+
+to_sql			   把数据保存到 sql 数据库 		
+
+
+
+整体示例
+
+```python	
+# 8.1 导出数据
+df = pd.read_csv("data/scientists.csv")
+df
+
+# 8.2 对上述的 df 操作,模拟实际开发中,对 df 做处理
+# 筛选数 年龄 > 平均年龄的数据
+new_df = df[df.Age > df.Age.mean()]
+
+# 8.3 把 df 对象,写出到目的地中
+# new_df.to_pickle("output/scientists_pickle.pkl")
+# new_df.to_excel("output/scientists_xls.xlsx",sheet_name="scientists",index=False)
+new_df.to_csv("output/scientists_csv.csv",index=False)
+
+# 导入数据演示
+# pd.read_pickle("output/scientists_pickle.pkl")
+# pd.read_excel("output/scientists_xls.xlsx")
+pd.read_csv("output/scientists_csv.csv")
+```
+
