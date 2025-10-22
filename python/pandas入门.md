@@ -1,6 +1,6 @@
 # pandas入门
 
-## Series 对象创建
+## 一、Series 对象创建
 
 ### 1.1 numpy 的 ndarray 转 Series 对象
 
@@ -188,7 +188,7 @@ data
 
 ---
 
-## DataFrame常用属性介绍
+## 二、DataFrame常用属性介绍
 
 ### 1. DataFrame 常用属性
 
@@ -436,4 +436,6 @@ new_df.to_csv("output/scientists_csv.csv",index=False)
 # pd.read_excel("output/scientists_xls.xlsx")
 pd.read_csv("output/scientists_csv.csv")
 ```
+
+---
 
