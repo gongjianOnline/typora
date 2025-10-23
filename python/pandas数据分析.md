@@ -288,3 +288,191 @@ city_day["Xylene"].bfill()[50:64]
 city_day["Xylene"].interpolate(limit_direction='both')[50:64]
 ```
 
+---
+
+## 8. apply 函数
+
+apply 函数可以接受一个自定义函数,可以将 DataFrame 的行列数据传递给自定义函数处理
+
+apply 函数类似于一个 for 循环,便利行列元素,但比 for 循环效率更高
+
+### 8.1 apply 函数作用于 Series 对象
+
+```python
+# 1. 创建 df 对象,给两列值
+df = pd.DataFrame({'a':[10,20,30],'b':[20,30,40]})
+df
+```
+
+```python
+# 2.演示  apply() 函数,操作 Series 对象
+# 需求1 : 自定义函数my_func1() 实现接受 Series 对象,然后使其每个值变成 其平方结果
+def my_func1(x):
+    return x ** 2
+
+# 传入 Series 对象,调用 my_func1 函数
+# 细节 apply() 函数会把 my_fun1 函数所用到 Series 的每个对象上
+df.a.apply(my_func1)
+```
+
+```python
+# 需求2: apply 传去,需要多个参数的函数,例如: 自定义函数 my_func2(x,e) 实现计算 x 的 e 次方
+def my_fun2(x,e):
+    return x ** e
+
+df.a.apply(my_fun2,e=3)
+```
+
+### 8.2 apply 函数作用于 DataFrame 对象
+
+```python
+# 细节 appl() 函数作用于 DF 独享,默认传入的是 axis=0 整列数据,不是 Series一样,逐个元素传递
+# 1. 把上述的 my_func1() 函数,作用到 DF 对象
+df.apply(my_func1)
+
+# 2. 自定义函数 my_func3() 看看 df 对象到底传入的是什么
+def my_func(x):
+    print(f'x的内容:{x}')
+    print(f'x的类型:{type(x)}')
+    
+# 3. 调用上述的 my_func3() 作用于 df 对象
+# df.apply(my_func3)  # 默认传入的是整列 series 对象
+
+# 4. 加入 axis 参数
+df.apply(my_func3,axis=1)   # 0 列 1  行
+
+# 如下是一种错误示例: 为了引出函数的向量化
+def avg_3(x,y,z):
+    return (x+y+z) / 3
+
+def avg_3_mod(x):
+    n1 = x[0]
+    n2 = x[1]
+    n3 = x[2]
+    return (n1 + n2 + n3) / 3
+df.apply(avg_3_mod)
+```
+
+### 8.3 apply() 函数案例-泰坦尼克号数据集
+
+```python
+"""
+需求: 自定义函数 分别计算 泰坦的数据集 某列的缺失值个数 某列的缺失值占比,某列的非缺失值占比
+# 1. 读取数据源 获取 df 对象
+"""
+titanic = pd.read_csv("data/titanic_train.csv")
+titanic.head()
+```
+
+```python
+# 2. 定义函数 实现各种需求
+# 需求1: count_missing(vec),计算某列的缺失值个数
+def count_missing(vec):
+    # vec就是接收到 df 独享的某列或者某行数据
+    return pd.isnull(vec).sum()
+
+# 需求2: prop_missing(vec) 计算某列缺失值占比
+def prop_missing(vec):
+    # 缺失值占比公式: 某列缺失值数量 / 某列元素总个数
+    return count_missing(vec) / vec.size
+
+# 需求3: prop_complete(vec),计算某列的 非缺失值占比
+def prop_complete(vec):
+    return 1- prop_missing(vec)
+
+titanic.apply(count_missing)
+titanic.apply(prop_missing)
+titanic.apply(prop_complete)
+```
+
+### 8.3 向量化函数对象介绍 np.vectorize
+
+```python
+# 1. 创建 df 独享, 给两列值
+df = pd.DataFrame({'a':[10,20,30],'b':[20,30,40]})
+df
+```
+
+```python
+def avg_2(x,y):
+    return (x + y) / 2
+
+avg_2(x=df['a'],y=df['b'])
+
+# 改造上述代码,程序出问题
+def avg_2_mod(x,y):
+    if x == 20:  # 这里会出错,因为 x 是向量(简单理解为一堆纸),20 是标量(1个值)
+        return np.nan
+    else:
+        return (x + y) / 2
+
+avg_2_mod(df['a'],df['b'])
+```
+
+```python
+# 解决思路: 通过 np.vectorize 将上述的函数转成:向量化函数,如果函数中遇到向量了,则内部会自动遍历
+
+@np.vectorize
+def avg_2_mod(x,y):
+    if x == 20:  # 这里会出错,因为 x 是向量(简单理解为一堆纸),20 是标量(1个值)
+        return np.nan
+    else:
+        return (x + y) / 2
+
+avg_2_mod(df['a'],df['b'])
+```
+
+```python
+## 方式二: lambda 方式
+df.apply(lambda x: x ** 2)
+```
+
+## 9. 分组聚合演变
+
+```python
+# 需求4: 使用自定义函数,完成计算平均值
+df2 = pd.DataFrame({
+    '城市': ['北京', '北京', '上海', '上海', '广州', '广州'],
+    '部门': ['销售', '销售', '技术', '技术', '销售', '技术'],
+    '收入': [8000, 9000, 10000, 11000, 7000, 9500]
+})
+```
+
+```python
+def my_mean(col):
+    # return col.mean()
+    return  col.sum() / col.size
+
+# 传入我们自定义的函数,计算平均值
+# df2.groupby(['部门','城市']).agg({'收入':my_mean})
+df2.groupby(['部门','城市'])['收入'].agg(my_mean)
+```
+
+```python
+# 需求6 agg() 函数,同时传入多个函数
+df2.groupby(['部门','城市'])['收入'].agg(['sum','mean','max'])
+```
+
+```python
+# 窗口函数展示
+df2['部门平均'] = df2.groupby("部门")['收入'].transform('mean')
+df2
+```
+
+## 10. 分组过滤
+
+```python
+tips = pd.read_csv("data/tips.csv")
+
+# 查看吃饭人数的分布情况
+tips['size'].value_counts()
+
+# 发现 1 5 6 个人吃饭次数较少,直接过滤掉这些数据
+tmp_df = tips.grouby('size').filter(lambda x:x['size'].count() > 10)
+
+tmp_df['size'].value_counts()
+
+```
+
+---
+
