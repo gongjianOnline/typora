@@ -476,3 +476,120 @@ tmp_df['size'].value_counts()
 
 ---
 
+## 11. 综合案例--零售会员数据分析
+
+导包
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['axes.unicode_minus'] = False
+```
+
+零售会员数据分析
+
+```python
+customer_info = pd.read_excel('data/会员信息查询.xlsx')
+customer_info.head()
+```
+
+按月统计注册的会员数量(即:月增量)
+
+```python
+# 1. 给上述 df 对象,新增 1 列, 充当: 年月字段
+customer_info['注册年月'] = customer_info['注册时间'].apply(lambda x:x.strftime("%Y-%m"))
+
+# 2. 上述的 df 对象中,获取我们要的字段
+customer_info[['会员卡号','会员等级','会员来源','注册时间','注册年月']]
+
+# 3. 完成上述的需求,按月统计注册会员数量
+month_count = customer_info.groupby('注册年月')[['会员卡号']].count()
+month_count.columns = ['月增量']
+month_count[1:]
+
+# 4. 针对上述数据进行可视化处理
+new_month_count = month_country[1:]
+# color 颜色 legend 设置图例 grid 设置网格 xlabel x轴显示内容  ylabei y轴显示内容
+new_month_count['月增量'].plot(figsize=(16,8),color="red",legend=True,ylabel="月增量",xlabel="年月")
+
+# 5. pivot_table() 透视表,也可以是实现 groupby() 函数功能,且透视表比 groupby() 更加灵活
+customer_info.pivot_table(index="注册年月",values="会员卡号",aggfunc="count")[1,:].plot(figsize=(16,8))
+
+# 6. 按每月计算 会员月存量 月存量 = 当前月增量 + 之前所有月的存量,即: 从第一个月至当前月的月增量的累加和
+month_count.loc[:,"会员存量"] = month_count['月增量'].cumsum()
+month_count()
+
+# 可视化
+customer_info.pivot_table(index='注册年月',values="会员卡号",aggfunc='count')[1:].plot(figsize=(16,8),secondary_y=True,legend=True,grid=True)
+month_count['会员存量'].plot(kind="bar",figsize=(16,8),color='pink',grid=True,legend=True,xlabel="年月",ylabel="月存量")
+plt.title("月增量 和 月存量分析结果展示")
+plt.show() # 这行代码可以省略不写
+```
+
+会员增量等级分布
+
+```python
+# 1. 查看目前的源数据
+customer_info.head()
+
+# 2. 使用透视表,计算: 按月 会员增量等级分布即可
+membar_rating = customer_info.pivot_table(index="注册年月",columns="会员等级",values="会员卡号",aggfunc="count")
+membar_rating = membar_rating[1:]
+membar_rating
+
+# 4. 月增量 会员等级分布结果查看
+# 4.1 构建画布,坐标系
+fig,axi = plt.subplots(figsize=(20,10))
+# 4.2 基于 ax1 复制一个新的坐标, ax2 ax1 展示 白银黄金 ax2 表示钻石铂金
+ax2 = ax1.twinx()
+membar_rating[['白银会员','黄金会员']].plot(ax=ax1,legend=True,grid=True)
+# 4.3 ax2 展示 钻石 铂金会员
+membar_rating[["钻石会员","铂金会员"]].ploc(kind="bar",ax=ax2,legend=True,color=['red','pink'])
+# 4.4 设置 ax2 坐标系的图例到：左侧
+ax2.legend(loc="upper left")
+```
+
+## 12. 日期类型处理
+
+Timestamp 是  panda 用来替换 python datetime 的
+
+可以使用 to_datetime 函数把数据换成 Timestamp 类型
+
+导包
+
+```python
+import pandas as pd
+from datetime import datetime
+```
+
+```python
+# 方式1: 获取当前时间
+t1 = datetime.now()
+t1
+```
+
+```python
+# 方式2:手动指定时间
+t2 = pd.to_datetime("2024-07-23")
+t2
+```
+
+```python
+# 方式3: 读取文件的时候,直接指定  某些列为:如期列 前提:这些数据要符合日期要求
+ebloa = pd.read_csv("data/country_timeseries.csv")
+# ebloa.head()
+# ebloa.info()
+
+# 将 Date 的字符串类型转换成 timedelta 类型
+ebloa.loc[:,"new_Date"] = pd.to_datetime(ebloa("Date"))
+ebloa.info()
+```
+
+```python
+# 方法4: 在读取数据的时候直接将类型转换为时间格式,parse_dates 接受的列索引或者是列名
+ebloa = pd.read_csv("data/country_timeseries.csv",parse_dates=['Date'])
+ebloa.info()
+```
+
