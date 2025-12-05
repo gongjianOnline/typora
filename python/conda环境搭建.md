@@ -31,6 +31,33 @@ conda --version
 
 如果是root用户安装, conda安装包则会在 ` ~/root/` 这个目录里面
 
+### 报错信息
+
+创建 conda python沙盒时报错
+
+这个错误信息非常明确地告诉您：**您没有接受 Conda 默认渠道（Anaconda Channels）的服务条款（Terms of Service, ToS）。**
+
+这个错误是在 Conda 的较新版本中引入的，目的是确保用户在从 Anaconda 官方仓库下载和使用软件包之前，明确了解并接受相关的许可和使用条件。
+
+```shell
+conda create -n vllm_env python=3.10 -y
+# 报错信息
+CondaToSNonInteractiveError: Terms of Service have not been accepted for the following channels. Please accept or remove them before proceeding:
+```
+
+#### 解决方法
+
+步骤一：接受服务条款
+
+在 `(base)` 或非环境激活状态下，运行以下两个命令（如果需要）：
+
+```shell
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+```
+
+
+
 ---
 
 ## 安装 jupyter 
