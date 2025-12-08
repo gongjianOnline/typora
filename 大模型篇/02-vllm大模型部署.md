@@ -46,3 +46,56 @@ pip install vllm
 ```
 
 需要等待很长一段时间的安装过程
+
+## 部署deepseek1.5 （4060 8G显卡测试）
+
+```shell
+python -m vllm.entrypoints.openai.api_server \
+    --model deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B \
+    --trust-remote-code \
+    --gpu-memory-utilization 0.85 \
+    --tensor-parallel-size 1 \
+    --dtype bfloat16 \
+    --max-model-len 2048 \
+    --port 8000
+```
+
+**vLLM 期望显存的计算关系**:
+
+$$\text{vLLM 期望显存} \approx (\text{模型权重}) + (\text{KV 缓存})$$
+
+当 $6.92 \text{ GiB} < \text{vLLM 期望显存}$ 时，就会报错。降低 `--max-model-len` 或 `--gpu-memory-utilization` 都能减小**期望显存**，帮助服务顺利启动。
+
+**运行成功**
+
+![](https://raw.githubusercontent.com/gongjianOnline/ImgHosting/main/img/8570106613b34313f8e2a8e4a95d2499.png)
+
+运行端口号 `localhost:8000` 服务启动成功，Swagger接口文档 `localhost:8000/docs`
+
+postMan 测试对话
+
+![](https://raw.githubusercontent.com/gongjianOnline/ImgHosting/main/img/a4390608ed6e6db1093f099783b20fb8.png)
+
+postMan开启流式对话
+
+![](https://raw.githubusercontent.com/gongjianOnline/ImgHosting/main/img/162071e2-1d65-4848-b1a9-96d9c243d2c1.png)
+
+### 常见错误
+
+![](https://raw.githubusercontent.com/gongjianOnline/ImgHosting/main/img/074a239c8ae34341dc2574f0097d6d61.png)
+
+显存空间不足，可降低相关参数
+
+```shell
+ --gpu-memory-utilization 0.85 \  # 默认参数 9
+--max-model-len 2048 \ # 默认参数 4096
+```
+
+`--max-model-len` 指定了 vLLM 服务能够处理的**最大序列长度 (Maximum Sequence Length)**。这个长度包括了：
+
+最大序列长度 = 输入提示词长度 + 最大生成长度
+
+`--gpu-memory-utilization` 的作用
+
+这个参数的本质是一个**安全阀 (Safety Valve)**，它告诉 vLLM：**“在你的启动和运行过程中，最多只能使用 GPU 总显存的 X 百分比。”**
+
