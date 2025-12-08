@@ -101,11 +101,7 @@ ls /usr/local/
    
    重新验证,如下提示则为成功
    
-   
-   
-   
-
-
+   ![](https://gjweb.top/wp-content/uploads/2025/12/Snipaste_2025-12-08_20-29-29.png)
 
 ## 验证  wsl 子系统中是否可以读取到 GPU
 
@@ -113,3 +109,4 @@ ls /usr/local/
 nvidia-smi
 ```
 
+![](https://gjweb.top/wp-content/uploads/2025/12/Snipaste_2025-12-08_20-41-49-1024x448.png)
